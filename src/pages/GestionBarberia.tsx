@@ -37,7 +37,7 @@ const GestionBarberia: React.FC = () => {
       }
 
       // Cargar usuarios para tener información completa
-      const GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzIfHk4EiVRftzFTwUQRbHQdldigrKjLJS0HTAF4Vym7qvgpLw93GwwKxS_xuWZBPFQ/exec';
+      const GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxbkjgTfhm8aTRjdlO5yIOZRi8c8C2X5UsaElu4p8P69_U0k_U3YP8fGEm49Rx-2-CF/exec';
       const API_SECRET_KEY = 'barberia_estilo_2025_secure_api_xyz789';
       
       const response = await fetch(

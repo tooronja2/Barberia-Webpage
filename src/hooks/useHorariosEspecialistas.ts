@@ -16,7 +16,7 @@ interface DiaLibre {
 }
 
 // URL ACTUALIZADA de Google Apps Script
-const GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzIfHk4EiVRftzFTwUQRbHQdldigrKjLJS0HTAF4Vym7qvgpLw93GwwKxS_xuWZBPFQ/exec';
+const GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxbkjgTfhm8aTRjdlO5yIOZRi8c8C2X5UsaElu4p8P69_U0k_U3YP8fGEm49Rx-2-CF/exec';
 
 // Función para normalizar hora a formato "HH:MM"
 const normalizarHora = (hora: string | number): string => {
