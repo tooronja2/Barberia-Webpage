@@ -15,7 +15,7 @@ interface AgregarTurnoProps {
 }
 
 // URL ACTUALIZADA de Google Apps Script
-const GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyhwFfV0_WlN2iJKgf6YZFE-bQxhgStL9AveuHLdFmzBguQC7A3q-9_50bzVGRohY7d/exec';
+const GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby2rFXsfJWOM-m2jsryKs9BVXOxxAm1ciFYiM4YJ6hRuaKCiSkgqDwhUwpR1wuHcvn6/exec';
 const API_SECRET_KEY = 'barberia_estilo_2025_secure_api_xyz789';
 
 // Usar los mismos servicios que están en servicios.json
