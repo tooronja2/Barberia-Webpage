@@ -9,7 +9,7 @@ interface LoginBarberiaProps {
 }
 
 // URLs de Google Apps Script - SINCRONIZADA con GestionUsuarios
-const GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwNQeYk30Tjd0M5T7ILxcZ284rGUvzRXDuR3Ys3zDB_vXCyY4YxUFLt37xTpF6pIpLk/exec';
+const GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxhFvq4S71jznhQwg08KoP6ClZsEMjz2ywSfbCuVZV58MW8AuiP28he6-u8r-4onJIS/exec';
 const API_SECRET_KEY = 'barberia_estilo_2025_secure_api_xyz789';
 
 const LoginBarberia: React.FC<LoginBarberiaProps> = ({ onLogin }) => {
