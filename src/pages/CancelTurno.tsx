@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 const API_SECRET_KEY = 'barberia_estilo_2025_secure_api_xyz789';
 
 // URL ACTUALIZADA de Google Apps Script
-const GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyLM-zX1gRZQcC0I5hl_53yXWaWxpeOgA8HfTCXpR7y31tzyHbBPNiYbrbUAF66OMBw/exec';
+const GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwNQeYk30Tjd0M5T7ILxcZ284rGUvzRXDuR3Ys3zDB_vXCyY4YxUFLt37xTpF6pIpLk/exec';
 
 const CancelTurno = () => {
   const [searchParams] = useSearchParams();

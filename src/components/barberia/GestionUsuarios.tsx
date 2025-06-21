@@ -21,7 +21,7 @@ interface GestionUsuariosProps {
 }
 
 const BARBEROS = ['Héctor Medina', 'Lucas Peralta', 'Camila González'];
-const GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyLM-zX1gRZQcC0I5hl_53yXWaWxpeOgA8HfTCXpR7y31tzyHbBPNiYbrbUAF66OMBw/exec';
+const GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwNQeYk30Tjd0M5T7ILxcZ284rGUvzRXDuR3Ys3zDB_vXCyY4YxUFLt37xTpF6pIpLk/exec';
 const API_SECRET_KEY = 'barberia_estilo_2025_secure_api_xyz789';
 
 const GestionUsuarios: React.FC<GestionUsuariosProps> = ({ onClose }) => {
