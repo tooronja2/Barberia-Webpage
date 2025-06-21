@@ -26,7 +26,7 @@ interface CalendarioCustomProps {
 }
 
 // URL ACTUALIZADA de Google Apps Script
-const GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby2rFXsfJWOM-m2jsryKs9BVXOxxAm1ciFYiM4YJ6hRuaKCiSkgqDwhUwpR1wuHcvn6/exec';
+const GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyrslHDHkVpiW8dtFVi380ZRjN3VhZf8oOnzeiwwB-qXB-BY1u58NE-fEY5I2JWPKzA/exec';
 
 // Función mejorada para extraer hora en formato HH:MM
 const extraerHora = (horaInput: string | Date): string => {
