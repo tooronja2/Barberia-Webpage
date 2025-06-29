@@ -490,7 +490,7 @@ const CalendarioCustom: React.FC<CalendarioCustomProps> = ({
             placeholder="Nombre completo *"
             value={datosCliente.nombre}
             onChange={(e) => setDatosCliente({...datosCliente, nombre: e.target.value})}
-            className="w-full p-2 border rounded-md"
+            className="w-full p-2 border rounded-md text-black placeholder:text-gray-500"
             required
           />
           
@@ -499,7 +499,7 @@ const CalendarioCustom: React.FC<CalendarioCustomProps> = ({
             placeholder="Email *"
             value={datosCliente.email}
             onChange={(e) => setDatosCliente({...datosCliente, email: e.target.value})}
-            className="w-full p-2 border rounded-md"
+            className="w-full p-2 border rounded-md text-black placeholder:text-gray-500"
             required
           />
           
@@ -508,7 +508,7 @@ const CalendarioCustom: React.FC<CalendarioCustomProps> = ({
             placeholder="Teléfono (opcional)"
             value={datosCliente.telefono}
             onChange={(e) => setDatosCliente({...datosCliente, telefono: e.target.value})}
-            className="w-full p-2 border rounded-md"
+            className="w-full p-2 border rounded-md text-black placeholder:text-gray-500"
           />
 
           <div className="bg-gray-50 p-4 rounded-md">
@@ -524,7 +524,7 @@ const CalendarioCustom: React.FC<CalendarioCustomProps> = ({
           <Button 
             onClick={crearReserva} 
             disabled={cargando || !datosCliente.nombre || !datosCliente.email}
-            className="w-full"
+            className="w-full bg-primary text-background font-bold py-3 hover:bg-primary/90 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
           >
             {cargando ? 'Procesando...' : 'Confirmar Reserva'}
           </Button>
