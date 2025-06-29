@@ -19,9 +19,9 @@ const BannerHero = () => {
       <div className="absolute inset-0 bg-gradient-to-r from-background/85 via-background/70 to-background/50"></div>
       <div className="absolute inset-0 backdrop-blur-[1px]"></div>
       
-      {/* Efectos de luz dorada */}
-      <div className="absolute top-0 right-0 w-96 h-96 bg-primary/10 rounded-full blur-3xl opacity-30"></div>
-      <div className="absolute bottom-0 left-0 w-72 h-72 bg-secondary/10 rounded-full blur-2xl opacity-20"></div>
+      {/* Efectos de luz dorada sutiles */}
+      <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl opacity-20"></div>
+      <div className="absolute bottom-0 left-0 w-48 h-48 bg-secondary/5 rounded-full blur-2xl opacity-15"></div>
 
       {/* Contenido principal centrado */}
       <div className="relative h-full flex items-center justify-center p-6 sm:p-8 md:p-12 lg:p-16 xl:p-20">
@@ -34,7 +34,7 @@ const BannerHero = () => {
                   lineHeight: 'clamp(3rem, 9vw, 7rem)',
                   textWrap: 'balance' as any
                 }}>
-              <div className="block bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent animate-shimmer mb-2 overflow-visible">
+              <div className="block text-primary mb-2 overflow-visible">
                 BARBERÍA
               </div>
               <div className="block text-foreground overflow-visible">
