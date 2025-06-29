@@ -131,9 +131,9 @@ const Header = () => {
               <li key={i} className="relative group">
                 <Link
                   to={item.url}
-                  className={`relative text-foreground font-medium text-lg transition-all duration-300 py-2 px-4 rounded-full hover:scale-105 ${
+                  className={`relative text-foreground font-medium text-lg transition-all duration-300 py-3 px-5 rounded-full hover:scale-105 ${
                     location.pathname === item.url
-                      ? "text-primary bg-primary/10 shadow-lg"
+                      ? "text-background bg-primary shadow-xl border border-primary/50"
                       : "hover:text-primary hover:bg-primary/5"
                   }`}
                   tabIndex={0}
@@ -148,14 +148,9 @@ const Header = () => {
                     {item.texto}
                   </span>
                   
-                  {/* Efecto de background animado */}
-                  <span className={`absolute inset-0 bg-gradient-to-r from-primary/20 to-accent/20 rounded-full transform transition-transform duration-300 ${
-                    location.pathname === item.url ? 'scale-100' : 'scale-0 group-hover:scale-100'
-                  }`} />
-                  
-                  {/* Indicador activo */}
-                  {location.pathname === item.url && (
-                    <span className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-primary rounded-full shadow-lg animate-pulse" />
+                  {/* Efecto hover para elementos no activos */}
+                  {location.pathname !== item.url && (
+                    <span className="absolute inset-0 bg-gradient-to-r from-primary/30 to-accent/30 rounded-full transform transition-all duration-300 scale-95 opacity-0 group-hover:scale-100 group-hover:opacity-100" />
                   )}
                 </Link>
               </li>
