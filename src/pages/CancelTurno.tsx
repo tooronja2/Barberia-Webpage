@@ -123,7 +123,7 @@ const CancelTurno = () => {
                   onClick={cancelarTurno}
                   disabled={cargando}
                   variant="destructive"
-                  className="flex-1 bg-burgundy-DEFAULT text-light-DEFAULT hover:bg-burgundy-DEFAULT/90"
+                  className="flex-1 bg-red-600 text-white hover:bg-red-700"
                 >
                   {cargando ? 'Cancelando...' : 'Sí, cancelar'}
                 </Button>
