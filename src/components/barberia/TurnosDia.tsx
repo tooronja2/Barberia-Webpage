@@ -32,7 +32,7 @@ interface TurnosDiaProps {
 }
 
 // URL ACTUALIZADA de Google Apps Script
-const GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxIXfTaKAfBkMPEuHhgYU4YIL2g4L4GNbb49hv_6F7VFLilNMPIzB60qNcYzSucfSiE/exec';
+const GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyb5nHyPqN7T-vgx1HdJoQZLHALfWnX4yD-Ps18Qq-fU3t8Mbhku-GekMSvYa1w17EN/exec';
 const API_SECRET_KEY = 'barberia_estilo_2025_secure_api_xyz789';
 
 const TurnosDia: React.FC<TurnosDiaProps> = ({ permisos, usuario, rol }) => {
