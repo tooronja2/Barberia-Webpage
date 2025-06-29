@@ -53,15 +53,17 @@ const Home = () => {
         </div>
 
         {/* Sección Sobre Nosotros - ahora con fade-in progresivo por línea */}
-        <section className="max-w-xl mx-auto mt-14 px-3 md:px-0">
+        <section 
+          ref={aboutRef}
+          className="max-w-xl mx-auto mt-14 px-3 md:px-0"
+        >
           <AnimatedCard 
-            ref={aboutRef}
             animation="fadeInUp"
-            glass={true}
-            className="px-5 md:px-8 py-6 flex flex-col items-center hover-lift"
+            glass={false}
+            className="px-5 md:px-8 py-6 flex flex-col items-center bg-card border border-border rounded-2xl shadow-elegant"
           >
             <div className="flex items-center gap-2 mb-3">
-              <span className="h-5 w-1 rounded bg-gold-DEFAULT block" />
+              <span className="h-5 w-1 rounded bg-primary block" />
               <h2 className="text-lg md:text-xl font-heading font-bold text-foreground tracking-tight">
                 Sobre Nosotros
               </h2>
@@ -71,16 +73,15 @@ const Home = () => {
                 <p
                   key={idx}
                   className={
-                    `text-light-100 text-[0.93rem] md:text-base leading-relaxed text-center font-body max-w-lg transition-all 
+                    `text-foreground/80 text-[0.93rem] md:text-base leading-relaxed text-center font-body max-w-lg transition-all duration-700
                     ${
                       aboutRevealed
-                        ? "opacity-100 translate-y-0 animate-fade-in"
+                        ? "opacity-100 translate-y-0"
                         : "opacity-0 translate-y-3"
                     }`
                   }
                   style={{
                     transitionDelay: aboutRevealed ? `${100 + idx * 220}ms` : "0ms",
-                    animationDelay: aboutRevealed ? `${100 + idx * 220}ms` : "0ms",
                   }}
                 >
                   {line}
@@ -95,7 +96,7 @@ const Home = () => {
           ref={servicesRef}
           className="max-w-6xl mx-auto mt-10 mb-10 px-4 md:px-0"
         >
-          <h2 className={`text-3xl font-heading font-bold mb-8 tracking-tight text-center text-light-DEFAULT transition-all duration-700 ${
+          <h2 className={`text-3xl font-heading font-bold mb-8 tracking-tight text-center text-foreground transition-all duration-700 ${
             servicesVisible ? 'opacity-100 translate-y-0 animate-fadeInUp' : 'opacity-0 translate-y-8'
           }`}>
             Nuestros Servicios
@@ -117,7 +118,7 @@ const Home = () => {
                     animation={i % 2 === 0 ? "fadeInLeft" : "fadeInRight"}
                     delay={i * 150}
                     hover="lift"
-                    className="group bg-dark-100 rounded-2xl shadow-xl overflow-hidden transform-gpu will-change-transform"
+                    className="group bg-card border border-border rounded-2xl shadow-elegant overflow-hidden transform-gpu will-change-transform"
                   >
                     <div className="overflow-hidden relative">
                       <img
@@ -129,28 +130,28 @@ const Home = () => {
                             : BARBERIA_IMAGES[i % BARBERIA_IMAGES.length]
                         }
                         alt={item.nombre}
-                        className="w-full object-cover h-48 border-b border-dark-200 transition-all duration-500 group-hover:scale-110 transform-gpu"
+                        className="w-full object-cover h-48 border-b border-border transition-all duration-500 group-hover:scale-110 transform-gpu"
                         loading="lazy"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                     </div>
                     <div className="flex flex-col gap-2 p-5">
-                      <h3 className="text-xl font-semibold text-light-DEFAULT flex items-center gap-2 group-hover:text-shadow-gold transition-all duration-300">
+                      <h3 className="text-xl font-semibold text-foreground flex items-center gap-2 transition-all duration-300">
                         {item.nombre}
                         {item.en_oferta && (
-                          <span className="ml-1 px-2 py-0.5 text-xs text-gold-DEFAULT bg-dark-200 rounded-full font-semibold animate-pulse">
+                          <span className="ml-1 px-2 py-0.5 text-xs text-primary bg-secondary rounded-full font-semibold animate-pulse">
                             Oferta!
                           </span>
                         )}
                       </h3>
-                      <div className="text-light-100 text-base mb-2 min-h-[40px] transition-colors duration-300 group-hover:text-light-DEFAULT">{item.descripcion_breve}</div>
+                      <div className="text-muted-foreground text-base mb-2 min-h-[40px] transition-colors duration-300 group-hover:text-foreground/90">{item.descripcion_breve}</div>
                       <div className="mt-2 flex gap-2 items-center text-lg">
-                        <span className="font-bold text-gold-DEFAULT group-hover:animate-glow transition-all duration-300">
+                        <span className="font-bold text-primary transition-all duration-300">
                           {config?.moneda_simbolo}
                           {item.precio_oferta ?? item.precio}
                         </span>
                         {item.precio_oferta && (
-                          <span className="line-through text-sm text-light-100">
+                          <span className="line-through text-sm text-muted-foreground">
                             {config?.moneda_simbolo}
                             {item.precio}
                           </span>
@@ -158,9 +159,8 @@ const Home = () => {
                       </div>
                       <Link to="/reservar-turno" className="mt-4">
                         <AnimatedButton
-                          className="w-full gold-gradient text-dark-DEFAULT font-medium text-sm shadow-gold"
+                          className="w-full bg-primary text-primary-foreground font-medium text-sm hover:bg-primary/90"
                           pulse={item.en_oferta}
-                          glow
                         >
                           Reservar
                         </AnimatedButton>
@@ -175,18 +175,17 @@ const Home = () => {
         {/* Banner de Reservar Turno */}
         <AnimatedCard 
           animation="scaleIn"
-          className="max-w-4xl mx-auto my-14 flex flex-col items-center justify-center py-10 glass-effect"
-          hover="glow"
+          className="max-w-4xl mx-auto my-14 flex flex-col items-center justify-center py-10 bg-card border border-border shadow-elegant"
+          hover="lift"
         >
-          <h2 className="text-2xl md:text-3xl font-heading font-bold mb-5 text-center text-light-DEFAULT text-shadow-gold animate-float">
+          <h2 className="text-2xl md:text-3xl font-heading font-bold mb-5 text-center text-foreground">
             ¿Querés reservar un turno?
           </h2>
           <Link to="/reservar-turno">
             <AnimatedButton
               size="lg"
-              className="gold-gradient text-dark-DEFAULT px-8 py-4 text-lg font-semibold shadow-gold min-w-[230px]"
+              className="bg-primary text-primary-foreground px-8 py-4 text-lg font-semibold min-w-[230px] hover:bg-primary/90"
               pulse
-              glow
             >
               Reservá tu turno
             </AnimatedButton>
@@ -199,11 +198,11 @@ const Home = () => {
             animation="slideInBottom"
             className="max-w-xl mx-auto mb-8 px-4"
           >
-            <div className="glass-card p-6">
-              <h3 className="text-xl font-heading font-bold mb-2 text-light-DEFAULT animate-fadeInUp">¿Dónde estamos?</h3>
-              <div className="font-semibold text-light-100 animate-fadeInLeft" style={{ animationDelay: '200ms' }}>{config?.direccion_fisica}</div>
-              <div className="text-light-100 mt-2 animate-fadeInLeft" style={{ animationDelay: '400ms' }}>{config?.telefono_contacto}</div>
-              <div className="text-light-100 animate-fadeInLeft" style={{ animationDelay: '600ms' }}>{config?.email_contacto}</div>
+            <div className="bg-card border border-border rounded-xl shadow-elegant p-6">
+              <h3 className="text-xl font-heading font-bold mb-2 text-foreground animate-fadeInUp">¿Dónde estamos?</h3>
+              <div className="font-semibold text-foreground/90 animate-fadeInLeft" style={{ animationDelay: '200ms' }}>{config?.direccion_fisica}</div>
+              <div className="text-muted-foreground mt-2 animate-fadeInLeft" style={{ animationDelay: '400ms' }}>{config?.telefono_contacto}</div>
+              <div className="text-muted-foreground animate-fadeInLeft" style={{ animationDelay: '600ms' }}>{config?.email_contacto}</div>
             </div>
           </AnimatedCard>
         )}
