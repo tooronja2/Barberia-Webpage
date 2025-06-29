@@ -104,7 +104,7 @@ const ReservaTurno = () => {
           {ESPECIALISTAS.map((s, idx) => (
             <button
               key={idx}
-              className={`flex items-center gap-4 w-full bg-card px-4 py-3 rounded-xl border border-border shadow hover:bg-accent transition ${staff === idx ? "border-primary shadow-lg scale-105" : ""}`}}
+              className={`flex items-center gap-4 w-full bg-card px-4 py-3 rounded-xl border border-border shadow hover:bg-accent transition ${staff === idx ? "border-primary shadow-lg scale-105" : ""}`}
               onClick={() => { setStaff(idx); setPaso(3); }}
             >
               <img src={s.foto} alt={s.nombre} className="h-12 w-12 rounded-full border border-dark-200" />
