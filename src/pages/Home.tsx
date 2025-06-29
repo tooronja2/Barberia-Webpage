@@ -3,6 +3,11 @@ import BannerHero from "@/components/BannerHero";
 import { useBusiness } from "@/context/BusinessContext";
 import { Link } from "react-router-dom";
 import { useRevealOnScroll } from "@/hooks/useRevealOnScroll";
+import { useScrollAnimation, useParallax } from "@/hooks/useScrollAnimation";
+import { AnimatedCard } from "@/components/AnimatedCard";
+import { AnimatedButton } from "@/components/AnimatedButton";
+import { PageTransition } from "@/components/PageTransition";
+import { LoadingCard } from "@/components/LoadingSpinner";
 
 // NUEVA imagen personalizada para "Corte de Barba"
 const CORTE_BARBA_IMG = "/lovable-uploads/b7d8c7e7-9a7f-490f-a88f-8529bede7dea.png";
@@ -28,19 +33,33 @@ const Home = () => {
   const { config, contenido, loading, error } = useBusiness();
   const { ref: aboutRef, revealed: aboutRevealed } = useRevealOnScroll<HTMLDivElement>();
   const { ref, revealed } = useRevealOnScroll<HTMLDivElement>();
+  const { ref: heroRef, isVisible: heroVisible } = useScrollAnimation();
+  const { ref: servicesRef, isVisible: servicesVisible } = useScrollAnimation({ threshold: 0.2 });
+  const parallaxOffset = useParallax(0.3);
 
   return (
     <>
       <SEOHead />
-      <main className="bg-background min-h-screen pt-2 flex flex-col gap-4">
-        <BannerHero />
+      <PageTransition>
+        <main className="bg-background min-h-screen pt-2 flex flex-col gap-4 scroll-smooth">
+        <div 
+          ref={heroRef}
+          className={`parallax transition-all duration-1000 ${
+            heroVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+          }`}
+          style={{ transform: `translateY(${parallaxOffset}px)` }}
+        >
+          <BannerHero />
+        </div>
 
         {/* Sección Sobre Nosotros - ahora con fade-in progresivo por línea */}
-        <section
-          ref={aboutRef}
-          className="max-w-xl mx-auto mt-14 px-3 md:px-0"
-        >
-          <div className="relative bg-card rounded-2xl shadow-[0_2px_16px_0_rgba(38,45,55,0.11)] border border-border px-5 md:px-8 py-6 flex flex-col items-center">
+        <section className="max-w-xl mx-auto mt-14 px-3 md:px-0">
+          <AnimatedCard 
+            ref={aboutRef}
+            animation="fadeInUp"
+            glass={true}
+            className="px-5 md:px-8 py-6 flex flex-col items-center hover-lift"
+          >
             <div className="flex items-center gap-2 mb-3">
               <span className="h-5 w-1 rounded bg-gold-DEFAULT block" />
               <h2 className="text-lg md:text-xl font-heading font-bold text-foreground tracking-tight">
@@ -68,102 +87,128 @@ const Home = () => {
                 </p>
               ))}
             </div>
-          </div>
+          </AnimatedCard>
         </section>
 
         {/* Mostrar todos los servicios */}
         <section
-          ref={ref}
-          className={`max-w-6xl mx-auto mt-10 mb-10 px-4 md:px-0 transition-all duration-700
-          ${revealed ? "animate-fade-in opacity-100" : "opacity-0 translate-y-10"}
-        `}
+          ref={servicesRef}
+          className="max-w-6xl mx-auto mt-10 mb-10 px-4 md:px-0"
         >
-          <h2 className="text-3xl font-heading font-bold mb-8 tracking-tight text-center text-light-DEFAULT animate-fade-in" style={{ transitionDelay: "120ms" }}>
+          <h2 className={`text-3xl font-heading font-bold mb-8 tracking-tight text-center text-light-DEFAULT transition-all duration-700 ${
+            servicesVisible ? 'opacity-100 translate-y-0 animate-fadeInUp' : 'opacity-0 translate-y-8'
+          }`}>
             Nuestros Servicios
           </h2>
-          {loading && <div className="text-center py-6 text-light-100">Cargando servicios...</div>}
-          {error && <div className="text-center text-burgundy-DEFAULT">{error}</div>}
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
-            {contenido &&
-              contenido.map((item, i) => (
-                <div
-                  key={item.id}
-                  className={`
-                    group bg-dark-100 rounded-2xl shadow-xl hover:shadow-2xl hover:scale-105 transition-transform duration-300
-                    ${revealed ? "animate-fade-in animate-slide-in-right animate-scale-in opacity-100" : "opacity-0 translate-x-8"}
-                  `}
-                  style={{ animationDelay: `${180 + i * 120}ms` }}
-                >
-                  <img
-                    src={
-                      item.id === "corte-barba"
-                        ? CORTE_BARBA_IMG
-                        : item.id === "corte-pelo-barba"
-                        ? CORTE_PELO_BARBA_IMG
-                        : BARBERIA_IMAGES[i % BARBERIA_IMAGES.length]
-                    }
-                    alt={item.nombre}
-                    className="rounded-t-2xl mb-0 w-full object-cover h-48 border-b border-dark-200 transition-transform duration-300 group-hover:scale-105"
-                    loading="lazy"
-                  />
-                  <div className="flex flex-col gap-2 p-5">
-                    <h3 className="text-xl font-semibold text-light-DEFAULT flex items-center gap-2">
-                      {item.nombre}
-                      {item.en_oferta && (
-                        <span className="ml-1 px-2 py-0.5 text-xs text-gold-DEFAULT bg-dark-200 rounded-full font-semibold">
-                          Oferta!
-                        </span>
-                      )}
-                    </h3>
-                    <div className="text-light-100 text-base mb-2 min-h-[40px]">{item.descripcion_breve}</div>
-                    <div className="mt-2 flex gap-2 items-center text-lg">
-                      <span className="font-bold text-gold-DEFAULT">
-                        {config?.moneda_simbolo}
-                        {item.precio_oferta ?? item.precio}
-                      </span>
-                      {item.precio_oferta && (
-                        <span className="line-through text-sm text-light-100">
-                          {config?.moneda_simbolo}
-                          {item.precio}
-                        </span>
-                      )}
-                    </div>
-                    <Link to="/reservar-turno">
-                      <button className="mt-4 px-4 py-2 rounded-full bg-gold-DEFAULT text-dark-DEFAULT font-medium text-sm shadow hover:bg-gold-DEFAULT/90 transition focus:ring-2 focus:ring-gold-DEFAULT animate-pulseButton w-full">
-                        Reservar
-                      </button>
-                    </Link>
-                  </div>
-                </div>
+          {loading && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+              {[...Array(6)].map((_, i) => (
+                <LoadingCard key={i} />
               ))}
-          </div>
+            </div>
+          )}
+          {error && <div className="text-center text-red-500 animate-bounceIn">{error}</div>}
+          {!loading && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+              {contenido &&
+                contenido.map((item, i) => (
+                  <AnimatedCard
+                    key={item.id}
+                    animation={i % 2 === 0 ? "fadeInLeft" : "fadeInRight"}
+                    delay={i * 150}
+                    hover="lift"
+                    className="group bg-dark-100 rounded-2xl shadow-xl overflow-hidden transform-gpu will-change-transform"
+                  >
+                    <div className="overflow-hidden relative">
+                      <img
+                        src={
+                          item.id === "corte-barba"
+                            ? CORTE_BARBA_IMG
+                            : item.id === "corte-pelo-barba"
+                            ? CORTE_PELO_BARBA_IMG
+                            : BARBERIA_IMAGES[i % BARBERIA_IMAGES.length]
+                        }
+                        alt={item.nombre}
+                        className="w-full object-cover h-48 border-b border-dark-200 transition-all duration-500 group-hover:scale-110 transform-gpu"
+                        loading="lazy"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    </div>
+                    <div className="flex flex-col gap-2 p-5">
+                      <h3 className="text-xl font-semibold text-light-DEFAULT flex items-center gap-2 group-hover:text-shadow-gold transition-all duration-300">
+                        {item.nombre}
+                        {item.en_oferta && (
+                          <span className="ml-1 px-2 py-0.5 text-xs text-gold-DEFAULT bg-dark-200 rounded-full font-semibold animate-pulse">
+                            Oferta!
+                          </span>
+                        )}
+                      </h3>
+                      <div className="text-light-100 text-base mb-2 min-h-[40px] transition-colors duration-300 group-hover:text-light-DEFAULT">{item.descripcion_breve}</div>
+                      <div className="mt-2 flex gap-2 items-center text-lg">
+                        <span className="font-bold text-gold-DEFAULT group-hover:animate-glow transition-all duration-300">
+                          {config?.moneda_simbolo}
+                          {item.precio_oferta ?? item.precio}
+                        </span>
+                        {item.precio_oferta && (
+                          <span className="line-through text-sm text-light-100">
+                            {config?.moneda_simbolo}
+                            {item.precio}
+                          </span>
+                        )}
+                      </div>
+                      <Link to="/reservar-turno" className="mt-4">
+                        <AnimatedButton
+                          className="w-full gold-gradient text-dark-DEFAULT font-medium text-sm shadow-gold"
+                          pulse={item.en_oferta}
+                          glow
+                        >
+                          Reservar
+                        </AnimatedButton>
+                      </Link>
+                    </div>
+                  </AnimatedCard>
+                ))}
+            </div>
+          )}
         </section>
 
         {/* Banner de Reservar Turno */}
-        <section className="max-w-4xl mx-auto my-14 flex flex-col items-center justify-center py-10">
-          <h2 className="text-2xl md:text-3xl font-heading font-bold mb-5 text-center text-light-DEFAULT">¿Querés reservar un turno?</h2>
+        <AnimatedCard 
+          animation="scaleIn"
+          className="max-w-4xl mx-auto my-14 flex flex-col items-center justify-center py-10 glass-effect"
+          hover="glow"
+        >
+          <h2 className="text-2xl md:text-3xl font-heading font-bold mb-5 text-center text-light-DEFAULT text-shadow-gold animate-float">
+            ¿Querés reservar un turno?
+          </h2>
           <Link to="/reservar-turno">
-            <button
-              className="bg-gold-DEFAULT text-dark-DEFAULT px-8 py-4 rounded-full text-lg font-semibold shadow-lg hover:bg-gold-DEFAULT/90 hover:scale-105 transition-all animate-pulseButton"
-              style={{ minWidth: 230 }}
+            <AnimatedButton
+              size="lg"
+              className="gold-gradient text-dark-DEFAULT px-8 py-4 text-lg font-semibold shadow-gold min-w-[230px]"
+              pulse
+              glow
             >
               Reservá tu turno
-            </button>
+            </AnimatedButton>
           </Link>
-        </section>
+        </AnimatedCard>
 
         {/* Dirección abajo de todo */}
         {config && (
-          <section className="max-w-xl mx-auto mb-8 px-4">
-            <div className="bg-dark-100 rounded-xl shadow-md p-6">
-              <h3 className="text-xl font-heading font-bold mb-2 text-light-DEFAULT">¿Dónde estamos?</h3>
-              <div className="font-semibold text-light-100">{config?.direccion_fisica}</div>
-              <div className="text-light-100 mt-2">{config?.telefono_contacto}</div>
-              <div className="text-light-100">{config?.email_contacto}</div>
+          <AnimatedCard
+            animation="slideInBottom"
+            className="max-w-xl mx-auto mb-8 px-4"
+          >
+            <div className="glass-card p-6">
+              <h3 className="text-xl font-heading font-bold mb-2 text-light-DEFAULT animate-fadeInUp">¿Dónde estamos?</h3>
+              <div className="font-semibold text-light-100 animate-fadeInLeft" style={{ animationDelay: '200ms' }}>{config?.direccion_fisica}</div>
+              <div className="text-light-100 mt-2 animate-fadeInLeft" style={{ animationDelay: '400ms' }}>{config?.telefono_contacto}</div>
+              <div className="text-light-100 animate-fadeInLeft" style={{ animationDelay: '600ms' }}>{config?.email_contacto}</div>
             </div>
-          </section>
+          </AnimatedCard>
         )}
-      </main>
+        </main>
+      </PageTransition>
     </>
   );
 };

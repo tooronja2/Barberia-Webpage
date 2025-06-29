@@ -3,6 +3,10 @@ import SEOHead from "@/components/SEOHead";
 import CalendarioCustom from "@/components/CalendarioCustom";
 import { useBusiness } from "@/context/BusinessContext";
 import { useRevealOnScroll } from "@/hooks/useRevealOnScroll";
+import { useScrollAnimation, useSwipeGesture } from "@/hooks/useScrollAnimation";
+import { AnimatedCard } from "@/components/AnimatedCard";
+import { AnimatedButton } from "@/components/AnimatedButton";
+import { PageTransition } from "@/components/PageTransition";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 

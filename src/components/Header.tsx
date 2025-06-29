@@ -2,8 +2,9 @@
 import { useBusiness } from "@/context/BusinessContext";
 import { Link, useLocation } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { Menu } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,

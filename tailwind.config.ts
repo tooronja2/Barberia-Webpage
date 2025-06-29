@@ -78,6 +78,27 @@ export default {
 				md: 'calc(var(--radius) - 2px)',
 				sm: 'calc(var(--radius) - 4px)'
 			},
+			screens: {
+				'xs': '475px',
+				'sm': '640px',
+				'md': '768px',
+				'lg': '1024px',
+				'xl': '1280px',
+				'2xl': '1400px',
+				'3xl': '1600px',
+			},
+			spacing: {
+				'18': '4.5rem',
+				'88': '22rem',
+				'128': '32rem',
+			},
+			animation: {
+				'fade-in': 'fadeIn 0.5s ease-out',
+				'slide-up': 'slideUp 0.5s ease-out',
+				'bounce-soft': 'bounceSoft 0.6s ease-out',
+				'scale-in': 'scaleIn 0.4s ease-out',
+				'slide-in-right': 'slideInRight 0.6s ease-out',
+			},
 			keyframes: {
 				'accordion-down': {
 					from: {
