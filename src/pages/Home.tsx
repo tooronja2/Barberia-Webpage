@@ -8,6 +8,7 @@ import { AnimatedCard } from "@/components/AnimatedCard";
 import { AnimatedButton } from "@/components/AnimatedButton";
 import { PageTransition } from "@/components/PageTransition";
 import { LoadingCard } from "@/components/LoadingSpinner";
+import TestimonialsSection from "@/components/TestimonialsSection";
 
 // NUEVA imagen personalizada para "Corte de Barba"
 const CORTE_BARBA_IMG = "/lovable-uploads/b7d8c7e7-9a7f-490f-a88f-8529bede7dea.png";
@@ -52,42 +53,73 @@ const Home = () => {
           <BannerHero />
         </div>
 
-        {/* Sección Sobre Nosotros - ahora con fade-in progresivo por línea */}
-        <section 
-          ref={aboutRef}
-          className="max-w-xl mx-auto mt-14 px-3 md:px-0"
-        >
-          <AnimatedCard 
+        {/* Sección Sobre Nosotros renovada con iconos */}
+        <section className="max-w-6xl mx-auto mt-20 mb-16 px-4 md:px-0">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl md:text-5xl font-heading font-bold text-foreground mb-4 tracking-tight">
+              SOBRE NOSOTROS
+            </h2>
+            <div className="flex items-center justify-center mb-6">
+              <div className="h-px bg-primary/30 w-20"></div>
+              <div className="w-3 h-3 bg-primary rounded-full mx-4"></div>
+              <div className="h-px bg-primary/30 w-20"></div>
+            </div>
+          </div>
+
+          {/* Tarjetas de valores con iconos */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+            <AnimatedCard
+              animation="fadeInUp"
+              delay={0}
+              className="text-center p-8 bg-card border border-border rounded-2xl shadow-elegant hover:shadow-xl transition-all duration-300"
+            >
+              <div className="w-20 h-20 bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+                <span className="text-3xl text-primary-foreground">✂️</span>
+              </div>
+              <h3 className="text-xl font-heading font-bold text-foreground mb-3">CALIDAD</h3>
+              <div className="text-3xl font-bold text-primary mb-2">25+</div>
+              <p className="text-muted-foreground font-body">Años de experiencia perfeccionando nuestro arte</p>
+            </AnimatedCard>
+
+            <AnimatedCard
+              animation="fadeInUp"
+              delay={200}
+              className="text-center p-8 bg-card border border-border rounded-2xl shadow-elegant hover:shadow-xl transition-all duration-300"
+            >
+              <div className="w-20 h-20 bg-gradient-to-br from-secondary to-primary rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+                <span className="text-3xl text-secondary-foreground">🏆</span>
+              </div>
+              <h3 className="text-xl font-heading font-bold text-foreground mb-3">ESTILO</h3>
+              <div className="text-3xl font-bold text-primary mb-2">100%</div>
+              <p className="text-muted-foreground font-body">Técnicas modernas combinadas con tradición</p>
+            </AnimatedCard>
+
+            <AnimatedCard
+              animation="fadeInUp"
+              delay={400}
+              className="text-center p-8 bg-card border border-border rounded-2xl shadow-elegant hover:shadow-xl transition-all duration-300"
+            >
+              <div className="w-20 h-20 bg-gradient-to-br from-accent to-secondary rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+                <span className="text-3xl text-accent-foreground">👥</span>
+              </div>
+              <h3 className="text-xl font-heading font-bold text-foreground mb-3">CONFIANZA</h3>
+              <div className="text-3xl font-bold text-primary mb-2">1000+</div>
+              <p className="text-muted-foreground font-body">Clientes satisfechos que confían en nosotros</p>
+            </AnimatedCard>
+          </div>
+
+          {/* Texto descriptivo mejorado */}
+          <AnimatedCard
             animation="fadeInUp"
-            glass={false}
-            className="px-5 md:px-8 py-6 flex flex-col items-center bg-card border border-border rounded-2xl shadow-elegant"
+            delay={600}
+            className="text-center p-8 md:p-12 bg-gradient-to-r from-card via-card/90 to-card border border-border rounded-2xl shadow-elegant"
           >
-            <div className="flex items-center gap-2 mb-3">
-              <span className="h-5 w-1 rounded bg-primary block" />
-              <h2 className="text-lg md:text-xl font-heading font-bold text-foreground tracking-tight">
-                Sobre Nosotros
-              </h2>
-            </div>
-            <div className="w-full flex flex-col items-center gap-2">
-              {aboutLines.map((line, idx) => (
-                <p
-                  key={idx}
-                  className={
-                    `text-foreground/80 text-[0.93rem] md:text-base leading-relaxed text-center font-body max-w-lg transition-all duration-700
-                    ${
-                      aboutRevealed
-                        ? "opacity-100 translate-y-0"
-                        : "opacity-0 translate-y-3"
-                    }`
-                  }
-                  style={{
-                    transitionDelay: aboutRevealed ? `${100 + idx * 220}ms` : "0ms",
-                  }}
-                >
-                  {line}
-                </p>
-              ))}
-            </div>
+            <p className="text-lg md:text-xl text-foreground/90 font-body leading-relaxed max-w-4xl mx-auto">
+              En <span className="text-primary font-semibold">Barbería Central</span> combinamos la tradición 
+              con las técnicas más modernas. Nuestro equipo de profesionales se dedica a realzar tu estilo 
+              personal en un ambiente cálido y acogedor, donde cada detalle cuenta para brindarte una 
+              experiencia única e inolvidable.
+            </p>
           </AnimatedCard>
         </section>
 
@@ -171,6 +203,9 @@ const Home = () => {
             </div>
           )}
         </section>
+
+        {/* Sección de Testimonios */}
+        <TestimonialsSection />
 
         {/* Banner de Reservar Turno */}
         <AnimatedCard 
