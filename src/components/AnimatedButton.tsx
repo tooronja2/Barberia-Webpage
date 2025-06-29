@@ -1,32 +1,27 @@
 import React, { useState } from 'react';
-import { Button } from './ui/button';
 
 interface AnimatedButtonProps {
   children: React.ReactNode;
   onClick?: () => void;
-  variant?: 'default' | 'secondary' | 'outline' | 'ghost';
-  size?: 'sm' | 'md' | 'lg';
   className?: string;
   disabled?: boolean;
   loading?: boolean;
   pulse?: boolean;
   glow?: boolean;
-  icon?: React.ReactNode;
   type?: 'button' | 'submit' | 'reset';
+  size?: 'sm' | 'md' | 'lg';
 }
 
 export const AnimatedButton: React.FC<AnimatedButtonProps> = ({
   children,
   onClick,
-  variant = 'default',
-  size = 'md',
   className = '',
   disabled = false,
   loading = false,
   pulse = false,
   glow = false,
-  icon,
   type = 'button',
+  size = 'md',
 }) => {
   const [isPressed, setIsPressed] = useState(false);
 
@@ -40,24 +35,22 @@ export const AnimatedButton: React.FC<AnimatedButtonProps> = ({
     lg: 'px-6 py-3 text-lg',
   };
 
-  const animationClasses = `
-    transform-gpu will-change-transform
-    transition-all duration-300 ease-out
-    ${pulse ? 'animate-pulseButton' : ''}
-    ${glow ? 'hover:animate-glow' : ''}
+  const baseClasses = `
+    inline-flex items-center justify-center rounded-md font-medium
+    transition-all duration-300 transform-gpu
+    ${sizeClasses[size]}
+    ${pulse ? 'animate-pulse' : ''}
+    ${glow ? 'hover:shadow-lg hover:shadow-primary/20' : ''}
     ${isPressed ? 'scale-95' : 'hover:scale-105'}
-    ${loading ? 'animate-pulse' : ''}
+    ${loading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
     active:scale-95
-    hover:shadow-gold
     ${className}
   `;
 
   return (
-    <Button
+    <button
       type={type}
-      variant={variant}
-      size={size}
-      className={`${sizeClasses[size]} ${animationClasses}`}
+      className={baseClasses}
       onClick={onClick}
       disabled={disabled || loading}
       onMouseDown={handleMouseDown}
@@ -66,11 +59,10 @@ export const AnimatedButton: React.FC<AnimatedButtonProps> = ({
     >
       <div className="flex items-center gap-2">
         {loading && (
-          <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-loading" />
+          <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
         )}
-        {icon && !loading && icon}
         {children}
       </div>
-    </Button>
+    </button>
   );
 };

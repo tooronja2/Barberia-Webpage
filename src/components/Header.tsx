@@ -2,7 +2,7 @@
 import { useBusiness } from "@/context/BusinessContext";
 import { Link, useLocation } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { useScrollAnimation } from "@/hooks/useScrollAnimation";
+// import { useScrollAnimation } from "@/hooks/useScrollAnimation"; // Removed to prevent import errors
 import { Menu } from "lucide-react";
 import { useState, useEffect } from "react";
 import {
@@ -24,6 +24,16 @@ const Header = () => {
   const { config } = useBusiness();
   const isMobile = useIsMobile();
   const location = useLocation();
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 50);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   if (!config) return null;
 

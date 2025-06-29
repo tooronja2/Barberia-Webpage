@@ -1,5 +1,4 @@
 import React from 'react';
-import { useScrollAnimation } from '../hooks/useScrollAnimation';
 
 interface AnimatedCardProps {
   children: React.ReactNode;
@@ -8,6 +7,7 @@ interface AnimatedCardProps {
   delay?: number;
   hover?: 'lift' | 'glow' | 'expand';
   glass?: boolean;
+  onClick?: () => void;
 }
 
 export const AnimatedCard: React.FC<AnimatedCardProps> = ({
@@ -17,9 +17,8 @@ export const AnimatedCard: React.FC<AnimatedCardProps> = ({
   delay = 0,
   hover = 'lift',
   glass = false,
+  onClick,
 }) => {
-  const { ref, isVisible } = useScrollAnimation();
-
   const animationClasses = {
     fadeInUp: 'animate-fadeInUp',
     fadeInLeft: 'animate-fadeInLeft',
@@ -30,16 +29,16 @@ export const AnimatedCard: React.FC<AnimatedCardProps> = ({
   };
 
   const hoverClasses = {
-    lift: 'hover-lift',
-    glow: 'hover-glow',
-    expand: 'hover-expand',
+    lift: 'hover:transform hover:-translate-y-2 hover:shadow-lg',
+    glow: 'hover:shadow-primary/20',
+    expand: 'hover:scale-105',
   };
 
   const baseClasses = `
-    transform-gpu will-change-transform
-    ${glass ? 'glass-card' : 'bg-card border border-border'}
+    transition-all duration-300 transform-gpu
+    ${glass ? 'bg-card/80 backdrop-blur-sm border border-border/50' : 'bg-card border border-border'}
     ${hoverClasses[hover]}
-    ${isVisible ? animationClasses[animation] : 'opacity-0'}
+    ${animationClasses[animation]}
     ${className}
   `;
 
@@ -47,9 +46,9 @@ export const AnimatedCard: React.FC<AnimatedCardProps> = ({
 
   return (
     <div
-      ref={ref}
       className={baseClasses}
       style={style}
+      onClick={onClick}
     >
       {children}
     </div>

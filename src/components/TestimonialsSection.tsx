@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { AnimatedCard } from './AnimatedCard';
 
 interface Testimonial {
   id: number;
@@ -113,11 +112,10 @@ const TestimonialsSection: React.FC = () => {
       {/* Desktop: 3 testimonials side by side */}
       <div className="hidden md:grid md:grid-cols-3 gap-8 mb-8">
         {visibleTestimonials.map((testimonial, index) => (
-          <AnimatedCard
+          <div
             key={`${testimonial.id}-${currentIndex}`}
-            animation="fadeInUp"
-            delay={index * 200}
-            className="p-6 bg-card border border-border rounded-2xl shadow-elegant hover:shadow-xl transition-all duration-300 h-full"
+            className="p-6 bg-card border border-border rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 h-full animate-fadeInUp"
+            style={{ animationDelay: `${index * 200}ms` }}
           >
             <div className="flex flex-col h-full">
               {/* Stars */}
@@ -137,16 +135,15 @@ const TestimonialsSection: React.FC = () => {
                 <div className="text-xs text-muted-foreground">{testimonial.date}</div>
               </div>
             </div>
-          </AnimatedCard>
+          </div>
         ))}
       </div>
 
       {/* Mobile: Single testimonial with navigation */}
       <div className="md:hidden">
-        <AnimatedCard
+        <div
           key={`mobile-${testimonials[currentIndex].id}`}
-          animation="fadeInUp"
-          className="p-6 bg-card border border-border rounded-2xl shadow-elegant mb-6"
+          className="p-6 bg-card border border-border rounded-2xl shadow-lg mb-6 animate-fadeInUp"
         >
           <div className="text-center">
             {/* Stars */}
@@ -166,7 +163,7 @@ const TestimonialsSection: React.FC = () => {
               <div className="text-xs text-muted-foreground">{testimonials[currentIndex].date}</div>
             </div>
           </div>
-        </AnimatedCard>
+        </div>
       </div>
 
       {/* Navigation Controls */}
