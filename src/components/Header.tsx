@@ -131,26 +131,24 @@ const Header = () => {
               <li key={i} className="relative group">
                 <Link
                   to={item.url}
-                  className={`relative text-foreground font-medium text-lg transition-all duration-300 py-3 px-5 rounded-full hover:scale-105 ${
+                  className={`relative font-medium text-lg transition-all duration-300 py-3 px-5 rounded-full hover:scale-105 flex items-center gap-2 ${
                     location.pathname === item.url
                       ? "text-background bg-primary shadow-xl border border-primary/50"
-                      : "hover:text-primary hover:bg-primary/5"
+                      : "text-foreground hover:text-primary hover:bg-primary/10"
                   }`}
                   tabIndex={0}
                 >
-                  <span className="relative z-10 flex items-center gap-2">
-                    <span className="text-base">
-                      {item.url === '/' ? '🏠' : 
-                       item.url === '/servicios' ? '✂️' :
-                       item.url === '/reservar-turno' ? '📅' :
-                       item.url === '/contacto' ? '📞' : '📄'}
-                    </span>
-                    {item.texto}
+                  <span className="text-base">
+                    {item.url === '/' ? '🏠' : 
+                     item.url === '/servicios' ? '✂️' :
+                     item.url === '/reservar-turno' ? '📅' :
+                     item.url === '/contacto' ? '📞' : '📄'}
                   </span>
+                  <span>{item.texto}</span>
                   
                   {/* Efecto hover para elementos no activos */}
                   {location.pathname !== item.url && (
-                    <span className="absolute inset-0 bg-gradient-to-r from-primary/30 to-accent/30 rounded-full transform transition-all duration-300 scale-95 opacity-0 group-hover:scale-100 group-hover:opacity-100" />
+                    <span className="absolute inset-0 bg-gradient-to-r from-primary/20 to-accent/20 rounded-full transform transition-all duration-300 scale-95 opacity-0 group-hover:scale-100 group-hover:opacity-100" />
                   )}
                 </Link>
               </li>

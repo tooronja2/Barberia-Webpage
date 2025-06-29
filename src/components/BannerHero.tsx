@@ -16,7 +16,8 @@ const BannerHero = () => {
       />
 
       {/* Overlay con gradiente sofisticado */}
-      <div className="absolute inset-0 bg-gradient-to-r from-background/80 via-background/60 to-transparent"></div>
+      <div className="absolute inset-0 bg-gradient-to-r from-background/85 via-background/70 to-background/50"></div>
+      <div className="absolute inset-0 backdrop-blur-[1px]"></div>
       
       {/* Efectos de luz dorada */}
       <div className="absolute top-0 right-0 w-96 h-96 bg-primary/10 rounded-full blur-3xl opacity-30"></div>
@@ -26,19 +27,26 @@ const BannerHero = () => {
       <div className="relative h-full flex items-center justify-center p-6 sm:p-8 md:p-12 lg:p-16 xl:p-20">
         <div className="text-center max-w-6xl w-full">
           {/* Logo/Título principal */}
-          <div className="mb-6">
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-heading font-bold text-foreground mb-4 tracking-tight leading-[0.9] sm:leading-[0.85] max-w-5xl mx-auto">
+          <div className="mb-8 px-4">
+            <h1 className="font-heading font-bold text-foreground mb-4 tracking-tight max-w-6xl mx-auto" 
+                style={{ 
+                  fontSize: 'clamp(2.5rem, 8vw, 6rem)',
+                  lineHeight: 'clamp(2.2rem, 7vw, 5.5rem)',
+                  textBalance: 'balance' as any
+                }}>
               <span className="block bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent animate-shimmer">
                 BARBERÍA
               </span>
-              <span className="block text-foreground mt-2">CENTRAL</span>
+              <span className="block text-foreground">CENTRAL</span>
             </h1>
           </div>
 
-          {/* Eslogan elegante */}
-          <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-body text-foreground/90 mb-8 font-light tracking-wide max-w-4xl mx-auto">
-            {config?.banner_principal.subtitulo || "Donde el estilo cobra vida"}
-          </p>
+          {/* Eslogan elegante con backdrop */}
+          <div className="backdrop-blur-sm bg-background/10 p-4 rounded-xl border border-foreground/10 mb-8 max-w-4xl mx-auto">
+            <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-body text-foreground font-light tracking-wide">
+              {config?.banner_principal.subtitulo || "Donde el estilo cobra vida"}
+            </p>
+          </div>
 
           {/* Separador visual */}
           <div className="flex items-center justify-center mb-8">
@@ -47,18 +55,20 @@ const BannerHero = () => {
             <div className="h-px bg-primary/30 w-16"></div>
           </div>
 
-          {/* Botón CTA destacado */}
+          {/* Botón CTA destacado con backdrop */}
           <div className="space-y-4">
-            <Link to="/reservar-turno">
-              <AnimatedButton
-                size="lg"
-                className="bg-gradient-to-r from-primary to-accent text-background font-bold px-12 py-4 text-xl tracking-wide shadow-2xl hover:shadow-primary/30 transition-all duration-300 border-2 border-primary/30 hover:border-primary/50"
-                pulse
-                glow
-              >
-                🔥 RESERVÁ TU TURNO
-              </AnimatedButton>
-            </Link>
+            <div className="inline-block backdrop-blur-sm bg-background/20 p-4 rounded-2xl border border-primary/20">
+              <Link to="/reservar-turno">
+                <AnimatedButton
+                  size="lg"
+                  className="bg-gradient-to-r from-primary to-accent text-background font-bold px-12 py-4 text-xl tracking-wide shadow-2xl hover:shadow-primary/50 transition-all duration-300 border-2 border-primary/30 hover:border-primary/60 hover:scale-105"
+                  pulse
+                  glow
+                >
+                  🔥 RESERVÁ TU TURNO
+                </AnimatedButton>
+              </Link>
+            </div>
             
             {/* Texto de apoyo */}
             <p className="text-sm text-muted-foreground font-accent uppercase tracking-wider">

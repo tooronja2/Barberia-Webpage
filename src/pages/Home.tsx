@@ -227,19 +227,18 @@ const Home = () => {
           </Link>
         </AnimatedCard>
 
-        {/* Dirección abajo de todo */}
+        {/* Dirección simplificada */}
         {config && (
-          <AnimatedCard
-            animation="slideInBottom"
-            className="max-w-xl mx-auto mb-8 px-4"
-          >
-            <div className="bg-card border border-border rounded-xl shadow-elegant p-6">
-              <h3 className="text-xl font-heading font-bold mb-2 text-foreground animate-fadeInUp">¿Dónde estamos?</h3>
-              <div className="font-semibold text-foreground/90 animate-fadeInLeft" style={{ animationDelay: '200ms' }}>{config?.direccion_fisica}</div>
-              <div className="text-muted-foreground mt-2 animate-fadeInLeft" style={{ animationDelay: '400ms' }}>{config?.telefono_contacto}</div>
-              <div className="text-muted-foreground animate-fadeInLeft" style={{ animationDelay: '600ms' }}>{config?.email_contacto}</div>
+          <div className="max-w-xl mx-auto mb-8 px-4">
+            <div className="bg-card border border-border rounded-2xl shadow-lg p-8 text-center animate-fadeInUp">
+              <h3 className="text-2xl font-heading font-bold mb-6 text-foreground">¿Dónde estamos?</h3>
+              <div className="space-y-3">
+                <div className="font-semibold text-lg text-foreground">{config?.direccion_fisica}</div>
+                <div className="text-muted-foreground">{config?.telefono_contacto}</div>
+                <div className="text-muted-foreground">{config?.email_contacto}</div>
+              </div>
             </div>
-          </AnimatedCard>
+          </div>
         )}
         </main>
       </PageTransition>
