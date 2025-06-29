@@ -68,7 +68,7 @@ const ReservaTurno = () => {
           {contenido?.map((item, idx) => (
             <button
               key={item.id}
-              className={`flex items-center gap-4 w-full bg-card px-4 py-3 rounded-xl border border-border shadow hover:bg-accent transition ${servicio === item.id ? "border-primary shadow-lg scale-105" : ""}`}}
+              className={`flex items-center gap-4 w-full bg-card px-4 py-3 rounded-xl border border-border shadow hover:bg-accent transition ${servicio === item.id ? "border-primary shadow-lg scale-105" : ""}`}
               onClick={() => { setServicio(item.id); setPaso(2); }}
             >
               <img
