@@ -31,13 +31,13 @@ const DashboardBarberia: React.FC<DashboardBarberiaProps> = ({ usuario, rol, per
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <div className="bg-white border-b p-4">
+      <div className="bg-card border-b border-border p-4">
         <div className="flex justify-between items-center max-w-4xl mx-auto">
           <div>
-            <h1 className="text-xl font-bold">Barbería Estilo</h1>
-            <p className="text-sm text-gray-600">{usuario} - {rol}</p>
+            <h1 className="text-xl font-bold text-foreground">Barbería Estilo</h1>
+            <p className="text-sm text-muted-foreground">{usuario} - {rol}</p>
           </div>
           <div className="flex gap-2">
             {esAdmin && (

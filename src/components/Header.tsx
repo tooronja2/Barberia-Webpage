@@ -30,9 +30,9 @@ const Header = () => {
   if (isMobile) {
     return (
       <>
-        <header className="w-full bg-black sticky top-0 z-50 border-b-0">
+        <header className="w-full bg-background sticky top-0 z-50 border-b-0">
           <nav className="flex justify-between items-center max-w-5xl mx-auto py-3 px-4">
-            <div className="flex items-center gap-2 font-bold text-lg text-white">
+            <div className="flex items-center gap-2 font-heading font-bold text-lg text-foreground">
               {config.nombre_negocio}
             </div>
             <DropdownMenu>
@@ -41,13 +41,13 @@ const Header = () => {
                   <Menu size={20} />
                 </button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48 z-50 bg-white">
+              <DropdownMenuContent align="end" className="w-48 z-50 bg-card">
                 {orderedMenu.map((item, i) => (
                   <DropdownMenuItem key={i} asChild>
                     <Link
                       to={item.url}
                       className="w-full cursor-pointer"
-                      style={{ color: "black" }}
+                      style={{ color: "hsl(var(--foreground))" }}
                     >
                       {/* En el menú mobile "Reservar" es más corto */}
                       {item.texto === "Reserva tu Turno"
@@ -61,7 +61,7 @@ const Header = () => {
           </nav>
         </header>
         {/* Separador fino debajo del header */}
-        <div className="w-full h-[7px] bg-zinc-300" />
+        <div className="w-full h-[7px] bg-border" />
       </>
     );
   }
@@ -69,9 +69,9 @@ const Header = () => {
   // --- Header para desktop ---
   return (
     <>
-      <header className="w-full bg-black sticky top-0 z-50 border-b-0">
+      <header className="w-full bg-background sticky top-0 z-50 border-b-0">
         <nav className="flex justify-between max-w-7xl mx-auto py-3 px-6">
-          <div className="flex items-center gap-2 font-bold text-2xl text-white">
+          <div className="flex items-center gap-2 font-heading font-bold text-2xl text-foreground">
             {config.nombre_negocio}
           </div>
           <ul className="flex items-center gap-12">
@@ -79,9 +79,9 @@ const Header = () => {
               <li key={i}>
                 <Link
                   to={item.url}
-                  className={`text-white hover:text-emerald-400 font-medium text-lg transition-colors duration-200 pb-1 border-b-2 border-transparent hover:border-emerald-400 ${
+                  className={`text-foreground hover:text-primary font-medium text-lg transition-colors duration-200 pb-1 border-b-2 border-transparent hover:border-primary ${
                     location.pathname === item.url
-                      ? "border-emerald-400"
+                      ? "border-primary"
                       : ""
                   }`}
                   tabIndex={0}
@@ -94,7 +94,7 @@ const Header = () => {
         </nav>
       </header>
       {/* Separador fino debajo del header */}
-      <div className="w-full h-[7px] bg-zinc-300" />
+      <div className="w-full h-[7px] bg-primary" />
     </>
   );
 };

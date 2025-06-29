@@ -73,32 +73,32 @@ const CancelTurno = () => {
 
   if (!eventId) {
     return (
-      <main className="max-w-md mx-auto pt-10 text-center">
-        <h1 className="text-2xl font-bold mb-4">Cancelar Turno</h1>
-        <p className="text-red-600">ID de turno no válido</p>
+      <main className="max-w-md mx-auto pt-10 text-center bg-dark-DEFAULT text-light-DEFAULT">
+        <h1 className="text-2xl font-heading font-bold mb-4">Cancelar Turno</h1>
+        <p className="text-burgundy-DEFAULT">ID de turno no válido</p>
       </main>
     );
   }
 
   return (
-    <main className="max-w-md mx-auto pt-10 px-4">
-      <h1 className="text-2xl font-bold mb-6 text-center">Cancelar Turno</h1>
+    <main className="max-w-md mx-auto pt-10 px-4 bg-dark-DEFAULT text-light-DEFAULT">
+      <h1 className="text-2xl font-heading font-bold mb-6 text-center">Cancelar Turno</h1>
       
       {mensaje ? (
-        <div className="bg-white rounded-xl p-6 shadow text-center">
-          <p className="text-lg">{mensaje}</p>
+        <div className="bg-dark-100 rounded-xl p-6 shadow text-center">
+          <p className="text-lg text-light-DEFAULT">{mensaje}</p>
           <Button 
             onClick={() => window.location.href = '/'} 
-            className="mt-4"
+            className="mt-4 bg-gold-DEFAULT text-dark-DEFAULT hover:bg-gold-DEFAULT/90"
           >
             Volver al inicio
           </Button>
         </div>
       ) : turnoData ? (
-        <div className="bg-white rounded-xl p-6 shadow space-y-4">
-          <h2 className="text-lg font-semibold text-center">Detalles del turno</h2>
+        <div className="bg-dark-100 rounded-xl p-6 shadow space-y-4">
+          <h2 className="text-lg font-heading font-semibold text-center text-light-DEFAULT">Detalles del turno</h2>
           
-          <div className="space-y-2 text-sm">
+          <div className="space-y-2 text-sm text-light-100">
             <p><strong>Servicio:</strong> {turnoData.Titulo_Evento}</p>
             <p><strong>Cliente:</strong> {turnoData.Nombre_Cliente}</p>
             <p><strong>Fecha:</strong> {turnoData.Fecha}</p>
@@ -110,12 +110,12 @@ const CancelTurno = () => {
 
           {turnoData.Estado !== 'Cancelado' ? (
             <div className="text-center space-y-4">
-              <p className="text-gray-600">¿Estás seguro que querés cancelar este turno?</p>
+              <p className="text-light-100">¿Estás seguro que querés cancelar este turno?</p>
               <div className="flex gap-3">
                 <Button 
                   variant="outline" 
                   onClick={() => window.location.href = '/'}
-                  className="flex-1"
+                  className="flex-1 border-gold-DEFAULT text-gold-DEFAULT hover:bg-gold-DEFAULT hover:text-dark-DEFAULT"
                 >
                   No, mantener turno
                 </Button>
@@ -123,7 +123,7 @@ const CancelTurno = () => {
                   onClick={cancelarTurno}
                   disabled={cargando}
                   variant="destructive"
-                  className="flex-1"
+                  className="flex-1 bg-burgundy-DEFAULT text-light-DEFAULT hover:bg-burgundy-DEFAULT/90"
                 >
                   {cargando ? 'Cancelando...' : 'Sí, cancelar'}
                 </Button>
@@ -131,15 +131,15 @@ const CancelTurno = () => {
             </div>
           ) : (
             <div className="text-center">
-              <p className="text-red-600">Este turno ya fue cancelado</p>
-              <Button onClick={() => window.location.href = '/'} className="mt-4">
+              <p className="text-burgundy-DEFAULT">Este turno ya fue cancelado</p>
+              <Button onClick={() => window.location.href = '/'} className="mt-4 bg-gold-DEFAULT text-dark-DEFAULT hover:bg-gold-DEFAULT/90">
                 Volver al inicio
               </Button>
             </div>
           )}
         </div>
       ) : (
-        <div className="text-center">
+        <div className="text-center text-light-DEFAULT">
           <p>Cargando datos del turno...</p>
         </div>
       )}

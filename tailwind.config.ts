@@ -63,6 +63,16 @@ export default {
 					ring: 'hsl(var(--sidebar-ring))'
 				}
 			},
+			fontFamily: {
+				'sans': ['Roboto', 'system-ui', 'sans-serif'],
+				'display': ['Playfair Display', 'serif'],
+				'body': ['Roboto', 'system-ui', 'sans-serif']
+			},
+			boxShadow: {
+				'elegant': '0 4px 20px rgba(0, 0, 0, 0.15)',
+				'gold': '0 4px 20px hsla(38, 90%, 62%, 0.2)',
+				'glass': '0 8px 32px rgba(0, 0, 0, 0.1)',
+			},
 			borderRadius: {
 				lg: 'var(--radius)',
 				md: 'calc(var(--radius) - 2px)',
