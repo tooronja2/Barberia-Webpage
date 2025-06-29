@@ -27,23 +27,27 @@ const BannerHero = () => {
       <div className="relative h-full flex items-center justify-center p-6 sm:p-8 md:p-12 lg:p-16 xl:p-20">
         <div className="text-center max-w-6xl w-full">
           {/* Logo/Título principal */}
-          <div className="mb-8 px-4">
-            <h1 className="font-heading font-bold text-foreground mb-4 tracking-tight max-w-6xl mx-auto" 
-                style={{ 
-                  fontSize: 'clamp(2.5rem, 8vw, 6rem)',
-                  lineHeight: 'clamp(2.2rem, 7vw, 5.5rem)',
-                  textBalance: 'balance' as any
-                }}>
-              <span className="block bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent animate-shimmer">
-                BARBERÍA
-              </span>
-              <span className="block text-foreground">CENTRAL</span>
-            </h1>
+          <div className="mb-8 px-4 min-h-[120px] sm:min-h-[140px] md:min-h-[180px] lg:min-h-[220px] flex items-center justify-center">
+            <div className="text-center w-full max-w-6xl mx-auto">
+              <div className="font-heading font-bold text-foreground tracking-tight break-words"
+                   style={{ 
+                     fontSize: 'clamp(2.5rem, 8vw, 6rem)',
+                     lineHeight: 'clamp(3rem, 9vw, 7rem)',
+                     textWrap: 'balance' as any
+                   }}>
+                <div className="block bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent animate-shimmer mb-2">
+                  BARBERÍA
+                </div>
+                <div className="block text-foreground">
+                  CENTRAL
+                </div>
+              </div>
+            </div>
           </div>
 
-          {/* Eslogan elegante con backdrop */}
-          <div className="backdrop-blur-sm bg-background/10 p-4 rounded-xl border border-foreground/10 mb-8 max-w-4xl mx-auto">
-            <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-body text-foreground font-light tracking-wide">
+          {/* Eslogan elegante con sombra */}
+          <div className="mb-8 max-w-4xl mx-auto">
+            <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-body text-foreground font-light tracking-wide bg-black/50 px-6 py-4 rounded-xl shadow-2xl">
               {config?.banner_principal.subtitulo || "Donde el estilo cobra vida"}
             </p>
           </div>
