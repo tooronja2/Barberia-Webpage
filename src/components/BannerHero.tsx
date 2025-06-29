@@ -27,22 +27,20 @@ const BannerHero = () => {
       <div className="relative h-full flex items-center justify-center p-6 sm:p-8 md:p-12 lg:p-16 xl:p-20">
         <div className="text-center max-w-6xl w-full">
           {/* Logo/Título principal */}
-          <div className="mb-8 px-4 min-h-[120px] sm:min-h-[140px] md:min-h-[180px] lg:min-h-[220px] flex items-center justify-center">
-            <div className="text-center w-full max-w-6xl mx-auto">
-              <div className="font-heading font-bold text-foreground tracking-tight break-words"
-                   style={{ 
-                     fontSize: 'clamp(2.5rem, 8vw, 6rem)',
-                     lineHeight: 'clamp(3rem, 9vw, 7rem)',
-                     textWrap: 'balance' as any
-                   }}>
-                <div className="block bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent animate-shimmer mb-2">
-                  BARBERÍA
-                </div>
-                <div className="block text-foreground">
-                  CENTRAL
-                </div>
+          <div className="mb-8 px-4 min-h-[240px] sm:min-h-[260px] md:min-h-[300px] lg:min-h-[340px] flex items-center justify-center overflow-visible">
+            <h1 className="text-center w-full break-words overflow-visible font-heading font-bold text-foreground tracking-tight max-w-6xl mx-auto"
+                style={{ 
+                  fontSize: 'clamp(2.5rem, 8vw, 6rem)',
+                  lineHeight: 'clamp(3rem, 9vw, 7rem)',
+                  textWrap: 'balance' as any
+                }}>
+              <div className="block bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent animate-shimmer mb-2 overflow-visible">
+                BARBERÍA
               </div>
-            </div>
+              <div className="block text-foreground overflow-visible">
+                CENTRAL
+              </div>
+            </h1>
           </div>
 
           {/* Eslogan elegante con sombra */}
