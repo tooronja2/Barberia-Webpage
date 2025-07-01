@@ -1,7 +1,7 @@
 // 🔧 Componente temporal para debugging de autenticación con Supabase
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import AuthServiceSupabase from '@/services/authServiceSupabase';
+import AuthServiceSimple from '@/services/authServiceSimple';
 import SupabaseService from '@/services/supabaseService';
 
 const DebugAuth: React.FC = () => {
@@ -39,7 +39,7 @@ const DebugAuth: React.FC = () => {
         console.log(`🔍 Probando con Supabase: ${user}`);
         
         try {
-          const result = await AuthServiceSupabase.login(user, pass);
+          const result = await AuthServiceSimple.login(user, pass);
           console.log(`📝 Resultado Supabase para ${user}:`, result);
           
           if (result.success) {

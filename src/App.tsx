@@ -13,6 +13,7 @@ import Equipo from "./pages/Equipo";
 import Resenas from "./pages/Resenas";
 import Direccion from "./pages/Direccion";
 import GestionBarberia from "./pages/GestionBarberia";
+import TestSupabase from "./pages/TestSupabase";
 
 const App = () => (
   <BrowserRouter>
@@ -30,6 +31,8 @@ const App = () => (
       </Route>
       {/* Ruta independiente para la gestión de barbería */}
       <Route path="/gestion" element={<GestionBarberia />} />
+      {/* Ruta de prueba para Supabase */}
+      <Route path="/test-supabase" element={<TestSupabase />} />
     </Routes>
   </BrowserRouter>
 );

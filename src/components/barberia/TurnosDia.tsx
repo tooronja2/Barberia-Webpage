@@ -3,8 +3,9 @@ import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { format } from 'date-fns';
-import { es } from 'date-fns/locale';
+// Reemplazado date-fns por funciones nativas para evitar errores de build
+// import { format } from 'date-fns';
+// import { es } from 'date-fns/locale';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import AgregarTurno from './AgregarTurno';
@@ -179,7 +180,7 @@ const TurnosDia: React.FC<TurnosDiaProps> = ({ permisos, usuario, rol }) => {
         setBarberosDisponibles(barberosUnicos);
 
         // Aplicar filtros
-        const fechaSeleccionada = date ? format(date, 'yyyy-MM-dd') : format(new Date(), 'yyyy-MM-dd');
+        const fechaSeleccionada = date ? date.toISOString().split('T')[0] : new Date().toISOString().split('T')[0];
         const turnosFiltradosPorFecha = turnosConvertidos.filter((turno: Turno) => turno.fecha === fechaSeleccionada);
         
         // Guardar turnos sin filtrar por barbero para estadísticas
@@ -442,7 +443,12 @@ const TurnosDia: React.FC<TurnosDiaProps> = ({ permisos, usuario, rol }) => {
           <Popover>
             <PopoverTrigger asChild>
               <Button variant="outline" className="justify-start text-left font-normal">
-                📅 {date ? format(date, 'PPP', { locale: es }) : <span>Seleccionar fecha</span>}
+                📅 {date ? date.toLocaleDateString('es-ES', { 
+                  weekday: 'long', 
+                  year: 'numeric', 
+                  month: 'long', 
+                  day: 'numeric' 
+                }) : <span>Seleccionar fecha</span>}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0 z-[9999] bg-white shadow-lg border rounded-md" align="end">

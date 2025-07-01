@@ -1,6 +1,6 @@
 // 🔐 Hook personalizado para manejo de autenticación con Supabase
 import { useState, useEffect, useCallback } from 'react';
-import AuthServiceSupabase from '@/services/authServiceSupabase';
+import AuthServiceSimple from '@/services/authServiceSimple';
 
 interface AuthState {
   isAuthenticated: boolean;
@@ -24,8 +24,8 @@ export const useAuth = () => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const isAuth = await AuthServiceSupabase.isAuthenticated();
-        const currentUser = await AuthServiceSupabase.getCurrentUser();
+        const isAuth = await AuthServiceSimple.isAuthenticated();
+        const currentUser = await AuthServiceSimple.getCurrentUser();
         
         setAuthState({
           isAuthenticated: isAuth,
@@ -48,26 +48,6 @@ export const useAuth = () => {
     };
 
     checkAuth();
-
-    // Suscribirse a cambios de autenticación
-    const { data: { subscription } } = AuthServiceSupabase.onAuthStateChange(
-      async (event, session) => {
-        console.log('🔄 Auth state changed:', event);
-        if (event === 'SIGNED_OUT') {
-          setAuthState({
-            isAuthenticated: false,
-            user: null,
-            isLoading: false
-          });
-        } else if (event === 'SIGNED_IN' && session) {
-          await checkAuth();
-        }
-      }
-    );
-
-    return () => {
-      subscription.unsubscribe();
-    };
   }, []);
 
   // Login
@@ -75,7 +55,7 @@ export const useAuth = () => {
     try {
       setAuthState(prev => ({ ...prev, isLoading: true }));
       
-      const result = await AuthServiceSupabase.login(usuario, password);
+      const result = await AuthServiceSimple.login(usuario, password);
       
       if (result.success && result.data) {
         const userData = result.data.usuario;
@@ -102,7 +82,7 @@ export const useAuth = () => {
 
   // Logout
   const logout = useCallback(async () => {
-    await AuthServiceSupabase.logout();
+    await AuthServiceSimple.logout();
     setAuthState({
       isAuthenticated: false,
       user: null,
@@ -112,12 +92,12 @@ export const useAuth = () => {
 
   // Verificar permisos
   const hasPermission = useCallback(async (permission: string): Promise<boolean> => {
-    return AuthServiceSupabase.hasPermission(permission);
+    return AuthServiceSimple.hasPermission(permission);
   }, []);
 
   // Verificar si es admin
   const isAdmin = useCallback(async (): Promise<boolean> => {
-    return AuthServiceSupabase.isAdmin();
+    return AuthServiceSimple.isAdmin();
   }, []);
 
   return {

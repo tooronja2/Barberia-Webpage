@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Lock, User, Shield } from 'lucide-react';
-import AuthServiceSupabase from '@/services/authServiceSupabase';
+import AuthServiceSimple from '@/services/authServiceSimple';
 import DebugAuth from '@/components/DebugAuth';
 
 interface LoginBarberiaProps {
@@ -24,8 +24,8 @@ const LoginBarberia: React.FC<LoginBarberiaProps> = ({ onLogin }) => {
   // Verificar si ya está autenticado
   useEffect(() => {
     const checkAuth = async () => {
-      if (await AuthServiceSupabase.isAuthenticated()) {
-        const user = await AuthServiceSupabase.getCurrentUser();
+      if (await AuthServiceSimple.isAuthenticated()) {
+        const user = await AuthServiceSimple.getCurrentUser();
         if (user) {
           console.log('✅ Usuario ya autenticado');
           onLogin(user.nombre, user.rol, user.permisos || []);
@@ -50,7 +50,7 @@ const LoginBarberia: React.FC<LoginBarberiaProps> = ({ onLogin }) => {
     
     try {
       // 🚀 Usar Supabase - MÁXIMO NIVEL DE SEGURIDAD
-      const resultado = await AuthServiceSupabase.login(usuario, password);
+      const resultado = await AuthServiceSimple.login(usuario, password);
       
       if (resultado.success && resultado.data) {
         const userData = resultado.data.usuario;
