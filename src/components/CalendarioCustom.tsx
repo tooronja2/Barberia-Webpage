@@ -547,8 +547,8 @@ const CalendarioCustom: React.FC<CalendarioCustomProps> = ({
             </div>
           </div>
 
-          <div className="bg-gray-50 p-4 rounded-md">
-            <h4 className="font-semibold">Resumen de la reserva:</h4>
+          <div className="bg-yellow-50 border border-yellow-200 p-4 rounded-md">
+            <h4 className="font-semibold text-yellow-800">Resumen de la reserva:</h4>
             <p><strong>Servicio:</strong> {servicio?.nombre}</p>
             <p><strong>Fecha:</strong> {fechaSeleccionada.toLocaleDateString()}</p>
             <p><strong>Hora:</strong> {horaSeleccionada}</p>
