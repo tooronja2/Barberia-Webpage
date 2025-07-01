@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Lock, User } from 'lucide-react';
+import { GoogleSheetsService } from '@/services/googleSheetsService';
 
 interface LoginBarberiaProps {
   onLogin: (usuario: string, rol: string, permisos: string[]) => void;
@@ -17,6 +18,22 @@ const LoginBarberia: React.FC<LoginBarberiaProps> = ({ onLogin }) => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [cargando, setCargando] = useState(false);
+  const [precargando, setPrecargando] = useState(true);
+
+  // Precargar datos al montar el componente
+  useEffect(() => {
+    const precargarDatos = async () => {
+      try {
+        await GoogleSheetsService.preloadData();
+      } catch (error) {
+        console.log('⚠️ Error en precarga inicial:', error);
+      } finally {
+        setPrecargando(false);
+      }
+    };
+    
+    precargarDatos();
+  }, []);
 
   const limpiarDatosUsuario = (user: any) => {
     // Función para limpiar espacios extra en las propiedades (igual que en GestionUsuarios)
@@ -107,23 +124,28 @@ const LoginBarberia: React.FC<LoginBarberiaProps> = ({ onLogin }) => {
     setCargando(true);
     setError('');
 
-    console.log('🔐 Intentando login con:', { usuario: usuario, password: '***' });
+    console.log('🔐 Intentando login optimizado con:', { usuario: usuario, password: '***' });
     
-    // Validar solo en Google Sheets
-    const validacionGoogleSheets = await validarUsuarioEnGoogleSheets(usuario, password);
-    
-    if (validacionGoogleSheets.valido && validacionGoogleSheets.usuario) {
-      const usuarioValidado = validacionGoogleSheets.usuario;
-      console.log('✅ Login exitoso desde Google Sheets:', usuarioValidado.nombre);
+    try {
+      // Usar el servicio optimizado con cache
+      const validacion = await GoogleSheetsService.validarUsuario(usuario, password);
       
-      localStorage.setItem('barberia_usuario', usuarioValidado.nombre);
-      localStorage.setItem('barberia_rol', usuarioValidado.rol);
-      localStorage.setItem('barberia_permisos', JSON.stringify(usuarioValidado.permisos));
-      localStorage.setItem('barberia_barbero_asignado', usuarioValidado.barberoAsignado || '');
-      onLogin(usuarioValidado.nombre, usuarioValidado.rol, usuarioValidado.permisos);
-    } else {
-      console.log('❌ Login fallido:', validacionGoogleSheets.error);
-      setError(validacionGoogleSheets.error || 'Usuario o contraseña incorrectos');
+      if (validacion.valido && validacion.usuario) {
+        const usuarioValidado = validacion.usuario;
+        console.log('✅ Login exitoso optimizado:', usuarioValidado.nombre);
+        
+        localStorage.setItem('barberia_usuario', usuarioValidado.nombre);
+        localStorage.setItem('barberia_rol', usuarioValidado.rol);
+        localStorage.setItem('barberia_permisos', JSON.stringify(usuarioValidado.permisos));
+        localStorage.setItem('barberia_barbero_asignado', usuarioValidado.barberoAsignado || '');
+        onLogin(usuarioValidado.nombre, usuarioValidado.rol, usuarioValidado.permisos);
+      } else {
+        console.log('❌ Login fallido:', validacion.error);
+        setError(validacion.error || 'Usuario o contraseña incorrectos');
+      }
+    } catch (error) {
+      console.error('❌ Error en login optimizado:', error);
+      setError('Error de conexión. Intenta nuevamente.');
     }
     
     setCargando(false);
@@ -174,9 +196,15 @@ const LoginBarberia: React.FC<LoginBarberiaProps> = ({ onLogin }) => {
               </div>
             )}
 
-            <Button type="submit" className="w-full" disabled={cargando}>
-              {cargando ? 'Validando...' : 'Iniciar Sesión'}
+            <Button type="submit" className="w-full" disabled={cargando || precargando}>
+              {precargando ? 'Cargando...' : cargando ? 'Validando...' : 'Iniciar Sesión'}
             </Button>
+            
+            {precargando && (
+              <div className="text-center text-xs text-gray-500 mt-2">
+                Preparando sistema...
+              </div>
+            )}
           </form>
         </CardContent>
       </Card>

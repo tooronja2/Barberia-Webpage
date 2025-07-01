@@ -3,6 +3,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { Button } from '@/components/ui/button';
 import { useBusiness } from '@/context/BusinessContext';
 import { useHorariosEspecialistas } from '@/hooks/useHorariosEspecialistas';
+import { GoogleSheetsService } from '@/services/googleSheetsService';
 
 interface EventoReserva {
   ID_Evento: string;
@@ -154,58 +155,15 @@ const CalendarioCustom: React.FC<CalendarioCustomProps> = ({
   const servicio = contenido?.find(s => s.id === servicioId);
   const duracionMinutos = parseInt(servicio?.detalles?.duracion?.replace('min', '') || '30');
 
-  // Cargar eventos desde Google Sheets
-  const cargarEventos = useCallback(async () => {
+  // Cargar eventos usando servicio optimizado
+  const cargarEventos = useCallback(async (forceRefresh = false) => {
     try {
-      console.log('🔄 Cargando eventos desde Google Sheets...');
-      const url = `${GOOGLE_APPS_SCRIPT_URL}?action=getEventos&apiKey=${API_SECRET_KEY}&timestamp=${Date.now()}`;
-      
-      const response = await fetch(url, {
-        method: 'GET',
-        headers: {
-          'Accept': 'application/json',
-        },
-        cache: 'no-cache'
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP Error: ${response.status}`);
-      }
-
-      const data = await response.json();
-      
-      if (data.success) {
-        console.log('📅 Eventos RAW recibidos:', data.eventos);
-        
-        // Procesar eventos para normalizar formato de fecha
-        const eventosProcesados = data.eventos.map((evento: any) => {
-          console.log('🔍 Procesando evento original:', evento);
-          
-          // Normalizar fecha - puede venir como Date object o string
-          let fechaNormalizada = evento.Fecha;
-          if (typeof evento.Fecha === 'object' && evento.Fecha instanceof Date) {
-            fechaNormalizada = evento.Fecha.toISOString().split('T')[0];
-          } else if (typeof evento.Fecha === 'string' && evento.Fecha.includes('T')) {
-            fechaNormalizada = evento.Fecha.split('T')[0];
-          }
-
-          const eventoNormalizado = {
-            ...evento,
-            Fecha: fechaNormalizada
-          };
-          
-          console.log('✅ Evento normalizado:', eventoNormalizado);
-          return eventoNormalizado;
-        });
-        
-        console.log('📋 Todos los eventos procesados:', eventosProcesados);
-        setEventos(eventosProcesados);
-      } else {
-        console.error('❌ Error del servidor:', data.error);
-        setEventos([]);
-      }
+      console.log('🔄 Cargando eventos optimizado...');
+      const eventosProcesados = await GoogleSheetsService.getEventos(forceRefresh);
+      console.log('📋 Eventos obtenidos optimizado:', eventosProcesados);
+      setEventos(eventosProcesados);
     } catch (error) {
-      console.error('❌ Error cargando eventos:', error);
+      console.error('❌ Error cargando eventos optimizado:', error);
       setEventos([]);
     }
   }, []);
@@ -414,44 +372,21 @@ const CalendarioCustom: React.FC<CalendarioCustomProps> = ({
     };
 
     try {
-      const datos = {
-        action: "crearReserva",
-        apiKey: API_SECRET_KEY,
-        data: JSON.stringify(reservaData)
-      };
-
-      const formData = new URLSearchParams();
-      for (const key in datos) {
-        formData.append(key, datos[key]);
-      }
-
-      console.log('🚀 Enviando nueva reserva');
+      console.log('🚀 Enviando nueva reserva optimizada');
       console.log('📦 Datos de reserva:', reservaData);
 
-      const response = await fetch(GOOGLE_APPS_SCRIPT_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: formData
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP Error: ${response.status} - ${response.statusText}`);
-      }
-
-      const result = await response.json();
+      const result = await GoogleSheetsService.crearReserva(reservaData);
       
       if (result.success) {
         alert('¡Reserva confirmada! Te enviamos un email de confirmación.');
         // Recargar eventos para actualizar la disponibilidad
-        await cargarEventos();
+        await cargarEventos(true); // Force refresh
         onReservaConfirmada();
       } else {
         alert('Error al crear la reserva: ' + (result.error || 'Error desconocido'));
       }
     } catch (error) {
-      console.error('❌ Error completo:', error);
+      console.error('❌ Error completo optimizado:', error);
       alert('Error al procesar la reserva: ' + error.message);
     } finally {
       setCargando(false);
