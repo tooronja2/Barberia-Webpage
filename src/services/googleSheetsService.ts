@@ -1,6 +1,10 @@
-// Servicio optimizado para Google Sheets con cache y retry logic
-const GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyb5nHyPqN7T-vgx1HdJoQZLHALfWnX4yD-Ps18Qq-fU3t8Mbhku-GekMSvYa1w17EN/exec';
-const API_SECRET_KEY = 'barberia_estilo_2025_secure_api_xyz789';
+// 🔒 Servicio SEGURO para Google Sheets - SIN contraseñas expuestas
+// Solo operaciones autorizadas con tokens válidos
+const GOOGLE_APPS_SCRIPT_URL = import.meta.env.VITE_GOOGLE_APPS_SCRIPT_URL;
+const API_SECRET_KEY = import.meta.env.VITE_API_SECRET_KEY;
+
+// ⚠️ IMPORTANTE: Este servicio YA NO expone usuarios/contraseñas
+// La autenticación se maneja en authService.ts
 
 // Configuración de cache
 const CACHE_DURATION = {
@@ -123,40 +127,29 @@ async function makeOptimizedRequest(
 // Servicio principal
 export class GoogleSheetsService {
   
-  // Obtener usuarios con cache
-  static async getUsuarios(forceRefresh = false): Promise<any[]> {
-    const cacheKey = 'usuarios';
-    
-    if (!forceRefresh) {
-      const cached = cache.get<any[]>(cacheKey);
-      if (cached) {
-        console.log('✅ Usuarios obtenidos del cache');
-        return cached;
-      }
-    }
-
+  // 🚫 ELIMINADO: getUsuarios - ERA INSEGURO
+  // La validación de usuarios ahora se hace en authService.ts
+  // NUNCA más exponer lista completa de usuarios
+  
+  // 🔐 Obtener datos básicos de usuarios (solo nombres/roles) - SOLO para admins
+  static async getUsuariosBasicos(token: string): Promise<any[]> {
     try {
-      const url = `${GOOGLE_APPS_SCRIPT_URL}?action=getUsuarios&apiKey=${API_SECRET_KEY}&timestamp=${Date.now()}`;
+      if (!token) {
+        throw new Error('Token requerido para esta operación');
+      }
+
+      const url = `${GOOGLE_APPS_SCRIPT_URL}?action=getUsuariosBasicos&token=${token}&apiKey=${API_SECRET_KEY}&timestamp=${Date.now()}`;
       const response = await makeOptimizedRequest(url, { method: 'GET' }, 6000, 1);
       const data = await response.json();
 
       if (data.success && data.usuarios) {
-        cache.set(cacheKey, data.usuarios, CACHE_DURATION.usuarios);
-        console.log('✅ Usuarios obtenidos y cacheados');
-        return data.usuarios;
+        console.log('✅ Usuarios básicos obtenidos (sin contraseñas)');
+        return data.usuarios; // Solo nombre, rol, permisos - SIN contraseñas
       } else {
-        throw new Error(data.error || 'Error al obtener usuarios');
+        throw new Error(data.error || 'Error al obtener usuarios básicos');
       }
     } catch (error) {
-      console.error('❌ Error al obtener usuarios:', error);
-      
-      // Intentar devolver cache expirado como fallback
-      const expiredCache = cache.get<any[]>(cacheKey);
-      if (expiredCache) {
-        console.log('🔄 Usando cache expirado como fallback');
-        return expiredCache;
-      }
-      
+      console.error('❌ Error al obtener usuarios básicos:', error);
       throw error;
     }
   }
@@ -251,52 +244,23 @@ export class GoogleSheetsService {
     }
   }
 
-  // Validar usuario optimizado
-  static async validarUsuario(usuario: string, password: string): Promise<any> {
+  // 🚫 ELIMINADO: validarUsuario - REEMPLAZADO por authService.ts
+  // Esta función era INSEGURA porque exponía contraseñas
+  // Usar AuthService.login() en su lugar
+  
+  // 🔐 Validar token de sesión
+  static async validarToken(token: string): Promise<boolean> {
     try {
-      console.log('🔐 Validando usuario optimizado...');
+      if (!token) return false;
       
-      const usuarios = await this.getUsuarios();
+      const url = `${GOOGLE_APPS_SCRIPT_URL}?action=validarToken&token=${token}&apiKey=${API_SECRET_KEY}&timestamp=${Date.now()}`;
+      const response = await makeOptimizedRequest(url, { method: 'GET' }, 3000, 1);
+      const data = await response.json();
       
-      // Procesar usuarios (mismo logic que antes pero con datos cacheados)
-      const usuariosProcesados = usuarios.map(user => {
-        const limpiarPropiedad = (valor: any) => {
-          return typeof valor === 'string' ? valor.trim() : valor;
-        };
-
-        let permisos = [];
-        try {
-          const permisosRaw = user.permisos || user['permisos '] || '[]';
-          permisos = typeof permisosRaw === 'string' ? JSON.parse(permisosRaw) : permisosRaw;
-          if (!Array.isArray(permisos)) permisos = ['ver_turnos'];
-        } catch (error) {
-          permisos = ['ver_turnos'];
-        }
-
-        return {
-          id: String(user.id || ''),
-          usuario: limpiarPropiedad(user.usuario || user['usuario '] || ''),
-          password: limpiarPropiedad(user.password || user['password '] || ''),
-          nombre: limpiarPropiedad(user.nombre || user['nombre '] || ''),
-          rol: limpiarPropiedad(user.rol || user['rol '] || 'Empleado'),
-          permisos: permisos,
-          barberoAsignado: limpiarPropiedad(user.barberoAsignado || user['barberoAsignado '] || '')
-        };
-      });
-      
-      const usuarioEncontrado = usuariosProcesados.find(u => 
-        u.usuario.toLowerCase() === usuario.toLowerCase() && u.password === password
-      );
-      
-      if (usuarioEncontrado) {
-        console.log('✅ Usuario validado desde cache/optimizado');
-        return { valido: true, usuario: usuarioEncontrado };
-      } else {
-        return { valido: false, error: 'Usuario o contraseña incorrectos' };
-      }
+      return data.success && data.valido;
     } catch (error) {
-      console.error('❌ Error al validar usuario:', error);
-      return { valido: false, error: 'Error de conexión al validar usuario' };
+      console.error('❌ Error validando token:', error);
+      return false;
     }
   }
 

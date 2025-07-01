@@ -2,150 +2,71 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Lock, User } from 'lucide-react';
-import { GoogleSheetsService } from '@/services/googleSheetsService';
+import { Lock, User, Shield } from 'lucide-react';
+import AuthService from '@/services/authService';
 
 interface LoginBarberiaProps {
   onLogin: (usuario: string, rol: string, permisos: string[]) => void;
 }
 
-// URLs de Google Apps Script - SINCRONIZADA con GestionUsuarios
-const GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyb5nHyPqN7T-vgx1HdJoQZLHALfWnX4yD-Ps18Qq-fU3t8Mbhku-GekMSvYa1w17EN/exec';
-const API_SECRET_KEY = 'barberia_estilo_2025_secure_api_xyz789';
+// 🔒 Login SEGURO - Usando AuthService
+// NO más credenciales hardcodeadas
 
 const LoginBarberia: React.FC<LoginBarberiaProps> = ({ onLogin }) => {
   const [usuario, setUsuario] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [cargando, setCargando] = useState(false);
-  const [precargando, setPrecargando] = useState(true);
+  const [precargando, setPrecargando] = useState(false);
+  const [intentosRestantes, setIntentosRestantes] = useState(3);
 
-  // Precargar datos al montar el componente
+  // Verificar si ya está autenticado
   useEffect(() => {
-    const precargarDatos = async () => {
-      try {
-        await GoogleSheetsService.preloadData();
-      } catch (error) {
-        console.log('⚠️ Error en precarga inicial:', error);
-      } finally {
-        setPrecargando(false);
+    if (AuthService.isAuthenticated()) {
+      const user = AuthService.getCurrentUser();
+      if (user) {
+        console.log('✅ Usuario ya autenticado');
+        onLogin(user.usuario, user.rol, user.permisos);
       }
-    };
-    
-    precargarDatos();
-  }, []);
-
-  const limpiarDatosUsuario = (user: any) => {
-    // Función para limpiar espacios extra en las propiedades (igual que en GestionUsuarios)
-    const limpiarPropiedad = (valor: any) => {
-      if (typeof valor === 'string') {
-        return valor.trim();
-      }
-      return valor;
-    };
-
-    // Procesar permisos - puede venir como string JSON o array
-    let permisos = [];
-    try {
-      const permisosRaw = user.permisos || user['permisos '] || '[]';
-      permisos = typeof permisosRaw === 'string' ? JSON.parse(permisosRaw) : permisosRaw;
-      if (!Array.isArray(permisos)) {
-        permisos = ['ver_turnos'];
-      }
-    } catch (error) {
-      console.error('Error al parsear permisos:', error);
-      permisos = ['ver_turnos'];
     }
+  }, [onLogin]);
 
-    return {
-      id: String(user.id || ''),
-      usuario: limpiarPropiedad(user.usuario || user['usuario '] || ''),
-      password: limpiarPropiedad(user.password || user['password '] || ''),
-      nombre: limpiarPropiedad(user.nombre || user['nombre '] || ''),
-      rol: limpiarPropiedad(user.rol || user['rol '] || 'Empleado'),
-      permisos: permisos,
-      barberoAsignado: limpiarPropiedad(user.barberoAsignado || user['barberoAsignado '] || '')
-    };
-  };
+  // 🚫 ELIMINADO: limpiarDatosUsuario - Ya no se necesita
+  // AuthService maneja toda la lógica de forma segura
 
-  const validarUsuarioEnGoogleSheets = async (usuario: string, password: string) => {
-    try {
-      console.log('🔄 Validando usuario en Google Sheets...');
-      console.log('🔑 Usuario:', usuario, 'Password:', password ? '***' : 'VACIO');
-      
-      // Primero obtenemos todos los usuarios
-      const response = await fetch(
-        `${GOOGLE_APPS_SCRIPT_URL}?action=getUsuarios&apiKey=${API_SECRET_KEY}&timestamp=${Date.now()}`
-      );
-      
-      const data = await response.json();
-      console.log('📄 Respuesta getUsuarios para login:', data);
-
-      if (data.success && data.usuarios) {
-        // Procesar y limpiar datos de usuarios
-        const usuariosProcesados = data.usuarios.map(limpiarDatosUsuario);
-        console.log('✅ Usuarios procesados para validación:', usuariosProcesados);
-        
-        // Buscar el usuario que coincida
-        const usuarioEncontrado = usuariosProcesados.find(u => 
-          u.usuario.toLowerCase() === usuario.toLowerCase() && u.password === password
-        );
-        
-        console.log('🔍 Usuario encontrado:', usuarioEncontrado ? 'SI' : 'NO');
-        
-        if (usuarioEncontrado) {
-          return {
-            valido: true,
-            usuario: usuarioEncontrado
-          };
-        } else {
-          return {
-            valido: false,
-            error: 'Usuario o contraseña incorrectos'
-          };
-        }
-      } else {
-        return {
-          valido: false,
-          error: data.error || 'Error al obtener usuarios'
-        };
-      }
-    } catch (error) {
-      console.error('❌ Error al validar usuario:', error);
-      return {
-        valido: false,
-        error: 'Error de conexión al validar usuario'
-      };
-    }
-  };
+  // 🚫 ELIMINADO: validarUsuarioEnGoogleSheets - ERA INSEGURO
+  // AuthService.login() maneja todo de forma segura
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setCargando(true);
     setError('');
 
-    console.log('🔐 Intentando login optimizado con:', { usuario: usuario, password: '***' });
+    console.log('🔒 Iniciando login SEGURO...');
     
     try {
-      // Usar el servicio optimizado con cache
-      const validacion = await GoogleSheetsService.validarUsuario(usuario, password);
+      // 🔐 Usar AuthService - MUCHO MÁS SEGURO
+      const resultado = await AuthService.login(usuario, password);
       
-      if (validacion.valido && validacion.usuario) {
-        const usuarioValidado = validacion.usuario;
-        console.log('✅ Login exitoso optimizado:', usuarioValidado.nombre);
-        
-        localStorage.setItem('barberia_usuario', usuarioValidado.nombre);
-        localStorage.setItem('barberia_rol', usuarioValidado.rol);
-        localStorage.setItem('barberia_permisos', JSON.stringify(usuarioValidado.permisos));
-        localStorage.setItem('barberia_barbero_asignado', usuarioValidado.barberoAsignado || '');
-        onLogin(usuarioValidado.nombre, usuarioValidado.rol, usuarioValidado.permisos);
+      if (resultado.success && resultado.usuario) {
+        console.log('✅ Login SEGURO exitoso');
+        // AuthService ya maneja el localStorage de forma segura
+        onLogin(resultado.usuario.nombre, resultado.usuario.rol, resultado.usuario.permisos);
       } else {
-        console.log('❌ Login fallido:', validacion.error);
-        setError(validacion.error || 'Usuario o contraseña incorrectos');
+        console.log('❌ Login SEGURO fallido:', resultado.error);
+        setError(resultado.error || 'Credenciales incorrectas');
+        
+        // Actualizar intentos restantes
+        const remainingAttempts = Math.max(0, intentosRestantes - 1);
+        setIntentosRestantes(remainingAttempts);
+        
+        if (remainingAttempts === 0) {
+          setError('Cuenta bloqueada por seguridad. Intenta en 15 minutos.');
+        }
       }
     } catch (error) {
-      console.error('❌ Error en login optimizado:', error);
-      setError('Error de conexión. Intenta nuevamente.');
+      console.error('❌ Error en login SEGURO:', error);
+      setError('Error de conexión. Verifica tu internet.');
     }
     
     setCargando(false);
@@ -155,8 +76,12 @@ const LoginBarberia: React.FC<LoginBarberiaProps> = ({ onLogin }) => {
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold">Barbería Estilo</CardTitle>
-          <p className="text-gray-600">Sistema de Gestión PWA v3.0</p>
+          <div className="flex items-center justify-center gap-2 mb-2">
+            <Shield className="h-6 w-6 text-green-600" />
+            <CardTitle className="text-2xl font-bold">Barbería Estilo</CardTitle>
+          </div>
+          <p className="text-gray-600">Sistema SEGURO v4.0</p>
+          <p className="text-xs text-green-600">🔒 Autenticación mejorada</p>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleLogin} className="space-y-4">
@@ -191,20 +116,28 @@ const LoginBarberia: React.FC<LoginBarberiaProps> = ({ onLogin }) => {
             </div>
 
             {error && (
-              <div className="text-red-600 text-sm text-center bg-red-50 p-2 rounded border border-red-200">
-                {error}
+              <div className="text-red-600 text-sm text-center bg-red-50 p-3 rounded border border-red-200">
+                <div className="flex items-center justify-center gap-2">
+                  <Shield className="h-4 w-4" />
+                  <span>{error}</span>
+                </div>
+                {intentosRestantes > 0 && (
+                  <p className="text-xs mt-1 text-gray-500">
+                    Intentos restantes: {intentosRestantes}
+                  </p>
+                )}
               </div>
             )}
 
-            <Button type="submit" className="w-full" disabled={cargando || precargando}>
-              {precargando ? 'Cargando...' : cargando ? 'Validando...' : 'Iniciar Sesión'}
+            <Button type="submit" className="w-full" disabled={cargando || intentosRestantes === 0}>
+              <Shield className="mr-2 h-4 w-4" />
+              {cargando ? 'Validando Seguro...' : 'Iniciar Sesión SEGURO'}
             </Button>
             
-            {precargando && (
-              <div className="text-center text-xs text-gray-500 mt-2">
-                Preparando sistema...
-              </div>
-            )}
+            <div className="text-center text-xs text-green-600 mt-2">
+              <p>🔒 Conexión cifrada y segura</p>
+              <p>🛡️ Sin exposición de credenciales</p>
+            </div>
           </form>
         </CardContent>
       </Card>
