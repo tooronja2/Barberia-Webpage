@@ -536,7 +536,7 @@ const CalendarioCustom: React.FC<CalendarioCustomProps> = ({
               </select>
               <input
                 type="tel"
-                placeholder="11 7366 9765"
+                placeholder="11 xxxx xxxx"
                 value={datosCliente.telefono}
                 onChange={(e) => setDatosCliente({...datosCliente, telefono: e.target.value})}
                 className="flex-1 p-3 border border-gray-300 rounded-md text-black placeholder:text-gray-500 focus:ring-2 focus:ring-primary focus:border-transparent"
@@ -587,8 +587,7 @@ const CalendarioCustom: React.FC<CalendarioCustomProps> = ({
           <div className="bg-yellow-50 border border-yellow-200 p-4 rounded-md space-y-3">
             <h4 className="font-semibold text-yellow-800">Política de Reservas</h4>
             <div className="text-sm text-yellow-700">
-              <p className="font-medium mb-2">PEDIMOS PUNTUALIDAD EN LOS TURNOS YA QUE SON SOLO 15 MINUTOS. GRACIAS!!!</p>
-              <p className="mb-2">PARA CANCELACIÓN HAY UN BOTÓN EN EL MAIL DE CONFIRMACIÓN</p>
+              <p className="font-medium mb-2">Pedimos puntualidad en los turnos. Para cancelación hay un botón en el mail de confirmación.</p>
               
               <button
                 type="button"
