@@ -3,28 +3,13 @@ import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-// Reemplazado date-fns por funciones nativas para evitar errores de build
-// import { format } from 'date-fns';
-// import { es } from 'date-fns/locale';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import AgregarTurno from './AgregarTurno';
 import { useToast } from '@/hooks/use-toast';
+import { supabaseService } from '@/services/supabaseService';
+import type { Turno } from '@/services/supabaseService';
 
-interface Turno {
-  id: string;
-  nombre: string;
-  email: string;
-  fecha: string;
-  horaInicio: string;
-  horaFin: string;
-  servicio: string;
-  valor: number;
-  responsable: string;
-  estado: string;
-  origen: string;
-  descripcion?: string;
-}
 
 interface TurnosDiaProps {
   permisos: string[];
@@ -32,9 +17,6 @@ interface TurnosDiaProps {
   rol?: string;
 }
 
-// URL ACTUALIZADA de Google Apps Script
-const GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxgGvtb0kV_SN1zOBGx9ImRk4PXrYB8Fi0HyUHp67J6ef_q5GBpiY1OHm4sqOHc_uZf/exec';
-const API_SECRET_KEY = 'barberia_estilo_2025_secure_api_xyz789';
 
 const TurnosDia: React.FC<TurnosDiaProps> = ({ permisos, usuario, rol }) => {
   const [turnos, setTurnos] = useState<Turno[]>([]);
@@ -69,164 +51,49 @@ const TurnosDia: React.FC<TurnosDiaProps> = ({ permisos, usuario, rol }) => {
     }
   };
 
-  const realizarFetchConReintentos = async (url: string, options?: RequestInit, maxReintentos = 3) => {
-    let ultimoError;
-    
-    for (let intento = 1; intento <= maxReintentos; intento++) {
-      try {
-        console.log(`🔄 Intento ${intento} de ${maxReintentos} para fetch`);
-        console.log('🔗 URL:', url);
-        console.log('⚙️ Options:', options);
-        
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 30000);
-        
-        const response = await fetch(url, {
-          ...options,
-          signal: controller.signal
-        });
-        
-        clearTimeout(timeoutId);
-        
-        console.log('📡 Response status:', response.status);
-        console.log('📡 Response ok:', response.ok);
-        
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-        }
-        
-        return response;
-      } catch (error) {
-        ultimoError = error;
-        console.error(`❌ Error en intento ${intento}:`, error);
-        
-        if (intento < maxReintentos) {
-          const delay = intento * 2000;
-          console.log(`⏳ Reintentando en ${delay}ms...`);
-          await new Promise(resolve => setTimeout(resolve, delay));
-        }
-      }
-    }
-    
-    throw ultimoError;
-  };
 
   const obtenerTurnos = async () => {
     setCargando(true);
     setError('');
     try {
       console.log('🔄 Iniciando obtención de turnos...');
-      const response = await realizarFetchConReintentos(
-        `${GOOGLE_APPS_SCRIPT_URL}?action=getEventos&apiKey=${API_SECRET_KEY}&timestamp=${Date.now()}`
-      );
       
-      const data = await response.json();
-      console.log('📄 Datos recibidos:', data);
+      const fechaSeleccionada = date ? date.toISOString().split('T')[0] : new Date().toISOString().split('T')[0];
+      const turnosData = await supabaseService.getTurnosPorFecha(fechaSeleccionada);
+      
+      // Extraer barberos únicos para el filtro
+      const responsablesValidos = turnosData
+        .map((turno: Turno) => turno.responsable)
+        .filter((responsable): responsable is string => 
+          typeof responsable === 'string' && responsable.trim() !== ''
+        );
+      const barberosUnicos: string[] = [...new Set(responsablesValidos)];
+      setBarberosDisponibles(barberosUnicos);
 
-      if (data.success) {
-        const turnosConvertidos = data.eventos.map((evento: any) => {
-          let fechaEvento, horaInicio, horaFin;
-          
-          try {
-            if (typeof evento.Fecha === 'string' && evento.Fecha.includes('T')) {
-              fechaEvento = new Date(evento.Fecha);
-            } else {
-              fechaEvento = new Date(evento.Fecha);
-            }
+      // Guardar turnos sin filtrar por barbero para estadísticas
+      setTurnosSinFiltrar(turnosData);
 
-            if (typeof evento['Hora Inicio'] === 'string' && evento['Hora Inicio'].includes('T')) {
-              horaInicio = new Date(evento['Hora Inicio']);
-            } else {
-              horaInicio = new Date(evento['Hora Inicio']);
-            }
+      // Aplicar filtros según el rol y barbero seleccionado
+      let turnosFiltrados = turnosData;
 
-            if (typeof evento['Hora Fin'] === 'string' && evento['Hora Fin'].includes('T')) {
-              horaFin = new Date(evento['Hora Fin']);
-            } else {
-              horaFin = new Date(evento['Hora Fin']);
-            }
-          } catch (e) {
-            console.error('Error parsing dates for event:', evento, e);
-            fechaEvento = new Date();
-            horaInicio = new Date();
-            horaFin = new Date();
-          }
-          
-          let estadoMapeado = evento.Estado;
-          
-          return {
-            id: evento.ID_Evento,
-            nombre: evento.Nombre_Cliente,
-            email: evento.Email_Cliente,
-            fecha: fechaEvento.toISOString().split('T')[0],
-            horaInicio: horaInicio.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit', hour12: false }),
-            horaFin: horaFin.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit', hour12: false }),
-            servicio: evento.Titulo_Evento || evento['Servicios incluidos'],
-            valor: evento['Valor del turno'] || 0,
-            responsable: evento.Responsable,
-            estado: estadoMapeado,
-            origen: evento.Estado === 'Completado' && evento.Nombre_Cliente === 'Atención directa en local' ? 'manual' : 'reserva',
-            descripcion: evento.Descripcion
-          };
-        });
-
-        // Extraer barberos únicos para el filtro - properly typed
-        const responsablesValidos = turnosConvertidos
-          .map((turno: Turno) => turno.responsable)
-          .filter((responsable): responsable is string => 
-            typeof responsable === 'string' && responsable.trim() !== ''
-          );
-        const barberosUnicos: string[] = [...new Set(responsablesValidos)];
-        setBarberosDisponibles(barberosUnicos);
-
-        // Aplicar filtros
-        const fechaSeleccionada = date ? date.toISOString().split('T')[0] : new Date().toISOString().split('T')[0];
-        const turnosFiltradosPorFecha = turnosConvertidos.filter((turno: Turno) => turno.fecha === fechaSeleccionada);
-        
-        // Guardar turnos sin filtrar por barbero para estadísticas
-        setTurnosSinFiltrar(turnosFiltradosPorFecha);
-
-        // Aplicar filtros según el rol y barbero seleccionado
-        let turnosFiltrados = turnosFiltradosPorFecha;
-
-        // Si el usuario es empleado y tiene barbero asignado específico
-        const barberoAsignado = obtenerBarberoAsignadoUsuario();
-        if (rol === 'Empleado' && barberoAsignado) {
-          turnosFiltrados = turnosFiltradosPorFecha.filter((turno: Turno) => turno.responsable === barberoAsignado);
-        }
-        // Si el usuario es barbero y ha seleccionado un barbero específico
-        else if (rol === 'Barbero' && barberoSeleccionado !== 'todos') {
-          turnosFiltrados = turnosFiltradosPorFecha.filter((turno: Turno) => turno.responsable === barberoSeleccionado);
-        }
-
-        turnosFiltrados.sort((a: Turno, b: Turno) => a.horaInicio.localeCompare(b.horaInicio));
-        
-        setTurnos(turnosFiltrados);
-        console.log('✅ Turnos cargados exitosamente:', turnosFiltrados.length);
-      } else {
-        const errorMsg = data.error || 'Error desconocido al cargar los turnos';
-        console.error('❌ Error de API:', errorMsg);
-        setError(errorMsg);
-        
-        toast({
-          title: "Error al cargar turnos",
-          description: errorMsg,
-          variant: "destructive",
-        });
+      // Si el usuario es empleado y tiene barbero asignado específico
+      const barberoAsignado = obtenerBarberoAsignadoUsuario();
+      if (rol === 'Empleado' && barberoAsignado) {
+        turnosFiltrados = turnosData.filter((turno: Turno) => turno.responsable === barberoAsignado);
       }
+      // Si el usuario es barbero y ha seleccionado un barbero específico
+      else if (rol === 'Barbero' && barberoSeleccionado !== 'todos') {
+        turnosFiltrados = turnosData.filter((turno: Turno) => turno.responsable === barberoSeleccionado);
+      }
+
+      turnosFiltrados.sort((a: Turno, b: Turno) => a.horaInicio.localeCompare(b.horaInicio));
+      
+      setTurnos(turnosFiltrados);
+      console.log('✅ Turnos cargados exitosamente:', turnosFiltrados.length);
+      
     } catch (e) {
       console.error("❌ Error completo al obtener los turnos:", e);
-      let errorMessage = 'Error de conexión al cargar los turnos';
-      
-      if (e instanceof Error) {
-        if (e.name === 'AbortError') {
-          errorMessage = 'Tiempo de espera agotado. Verifique su conexión a internet.';
-        } else if (e.message.includes('fetch')) {
-          errorMessage = 'Error de red. Verifique su conexión a internet y que el servidor esté disponible.';
-        } else {
-          errorMessage = `Error de conexión: ${e.message}`;
-        }
-      }
+      const errorMessage = e instanceof Error ? e.message : 'Error de conexión al cargar los turnos';
       
       setError(errorMessage);
       toast({
@@ -243,52 +110,22 @@ const TurnosDia: React.FC<TurnosDiaProps> = ({ permisos, usuario, rol }) => {
     try {
       console.log('🔄 Cancelando turno:', turnoId);
       
-      const formData = new URLSearchParams();
-      formData.append('action', 'cancelarTurno');
-      formData.append('apiKey', API_SECRET_KEY);
-      formData.append('eventId', turnoId);
-
-      console.log('📤 Request body FormData:', formData.toString());
-
-      const response = await realizarFetchConReintentos(GOOGLE_APPS_SCRIPT_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: formData
+      await supabaseService.actualizarEstadoTurno(turnoId, 'Cancelado');
+      
+      setTurnos(prevTurnos =>
+        prevTurnos.map(turno =>
+          turno.id === turnoId ? { ...turno, estado: 'Cancelado' } : turno
+        )
+      );
+      
+      toast({
+        title: "Turno cancelado",
+        description: "El turno se ha cancelado correctamente.",
       });
-
-      const result = await response.json();
-      console.log('✅ Response result:', result);
-
-      if (result.success) {
-        setTurnos(prevTurnos =>
-          prevTurnos.map(turno =>
-            turno.id === turnoId ? { ...turno, estado: 'Cancelado' } : turno
-          )
-        );
-        
-        toast({
-          title: "Turno cancelado",
-          description: "El turno se ha cancelado correctamente.",
-        });
-      } else {
-        throw new Error(result.error || 'Error desconocido del servidor');
-      }
 
     } catch (error) {
       console.error('❌ Error completo al cancelar el turno:', error);
-      
-      let errorMessage = 'Error de conexión al cancelar el turno';
-      if (error instanceof Error) {
-        if (error.name === 'AbortError') {
-          errorMessage = 'Tiempo de espera agotado al cancelar el turno';
-        } else if (error.message.includes('fetch')) {
-          errorMessage = 'Error de red al cancelar el turno. Verifique su conexión.';
-        } else {
-          errorMessage = `Error al cancelar: ${error.message}`;
-        }
-      }
+      const errorMessage = error instanceof Error ? error.message : 'Error al cancelar el turno';
       
       setError(errorMessage);
       
@@ -454,7 +291,6 @@ const TurnosDia: React.FC<TurnosDiaProps> = ({ permisos, usuario, rol }) => {
             <PopoverContent className="w-auto p-0 z-[9999] bg-white shadow-lg border rounded-md" align="end">
               <Calendar
                 mode="single"
-                locale={es}
                 selected={date}
                 onSelect={setDate}
                 initialFocus
