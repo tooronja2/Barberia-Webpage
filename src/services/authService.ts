@@ -204,6 +204,7 @@ class AuthService {
       };
       
       localStorage.setItem('login_attempts', JSON.stringify(newAttempts));
+      console.log(`⚠️ Intentos fallidos: ${newAttempts.count}/${this.MAX_ATTEMPTS}`);
     } catch (error) {
       console.error('Error incrementando intentos:', error);
     }
@@ -254,6 +255,16 @@ class AuthService {
     // TODO: Implementar renovación de token
     console.log('🔄 Renovación de token no implementada aún');
     return false;
+  }
+
+  // 🧹 Limpiar intentos fallidos manualmente (para debugging)
+  static clearLoginAttempts(): void {
+    try {
+      localStorage.removeItem('login_attempts');
+      console.log('🧹 Intentos de login limpiados manualmente');
+    } catch (error) {
+      console.error('Error limpiando intentos:', error);
+    }
   }
 }
 

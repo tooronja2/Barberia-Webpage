@@ -4,6 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Lock, User, Shield } from 'lucide-react';
 import AuthService from '@/services/authService';
+import DebugAuth from '@/components/DebugAuth';
 
 interface LoginBarberiaProps {
   onLogin: (usuario: string, rol: string, permisos: string[]) => void;
@@ -141,6 +142,7 @@ const LoginBarberia: React.FC<LoginBarberiaProps> = ({ onLogin }) => {
           </form>
         </CardContent>
       </Card>
+      <DebugAuth />
     </div>
   );
 };
