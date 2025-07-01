@@ -32,7 +32,10 @@ const DebugAuth: React.FC = () => {
     try {
       console.log('🔐 Testing login with debug info...');
       
-      // Probar con diferentes usuarios
+      // Probar con diferentes usuarios usando fetch directo
+      const API_URL = import.meta.env.VITE_GOOGLE_APPS_SCRIPT_URL;
+      const API_KEY = import.meta.env.VITE_API_SECRET_KEY;
+      
       const testUsers = [
         { user: 'tomasradeljakadmin', pass: 'totomax1' },
         { user: 'matiasbarbero', pass: 'matiasbarbero' },
@@ -40,17 +43,37 @@ const DebugAuth: React.FC = () => {
       ];
 
       for (const { user, pass } of testUsers) {
-        console.log(`🔍 Probando: ${user}`);
-        const result = await AuthService.login(user, pass);
-        console.log(`📝 Resultado para ${user}:`, result);
+        console.log(`🔍 Probando directo con API: ${user}`);
         
-        if (result.success) {
-          alert(`✅ Login exitoso con: ${user}`);
-          return;
+        // Test directo con la API antigua para ver si funciona
+        try {
+          const formData = new URLSearchParams();
+          formData.append('action', 'validarLogin');
+          formData.append('usuario', user);
+          formData.append('password', pass);
+          formData.append('apiKey', API_KEY);
+
+          const response = await fetch(API_URL, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: formData
+          });
+
+          const data = await response.json();
+          console.log(`📝 Respuesta API para ${user}:`, data);
+          
+          if (data.success) {
+            alert(`✅ Login exitoso con: ${user}`);
+            return;
+          }
+        } catch (error) {
+          console.error(`❌ Error API para ${user}:`, error);
         }
       }
       
-      alert('❌ Ningún usuario funcionó');
+      alert('❌ Ningún usuario funcionó con API directa');
     } catch (error) {
       console.error('❌ Error en test login:', error);
       alert('Error en test de login');
