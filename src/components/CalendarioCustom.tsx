@@ -611,14 +611,16 @@ const CalendarioCustom: React.FC<CalendarioCustomProps> = ({
             </div>
           </div>
 
-          <div className="bg-gray-50 p-4 rounded-md">
-            <h4 className="font-semibold">Resumen de la reserva:</h4>
-            <p><strong>Servicio:</strong> {servicio?.nombre}</p>
-            <p><strong>Fecha:</strong> {fechaSeleccionada.toLocaleDateString()}</p>
-            <p><strong>Hora:</strong> {horaSeleccionada}</p>
-            <p><strong>Duración:</strong> {duracionMinutos} minutos</p>
-            <p><strong>Especialista:</strong> {responsable}</p>
-            <p><strong>Precio:</strong> {config?.moneda_simbolo}{servicio?.precio_oferta || servicio?.precio}</p>
+          <div className="bg-yellow-50 border border-yellow-200 p-4 rounded-md space-y-3">
+            <h4 className="font-semibold text-yellow-800">Resumen de la reserva:</h4>
+            <div className="text-sm text-yellow-700">
+              <p><strong>Servicio:</strong> {servicio?.nombre}</p>
+              <p><strong>Fecha:</strong> {fechaSeleccionada.toLocaleDateString()}</p>
+              <p><strong>Hora:</strong> {horaSeleccionada}</p>
+              <p><strong>Duración:</strong> {duracionMinutos} minutos</p>
+              <p><strong>Especialista:</strong> {responsable}</p>
+              <p><strong>Precio:</strong> {config?.moneda_simbolo}{servicio?.precio_oferta || servicio?.precio}</p>
+            </div>
           </div>
 
           <Button 
