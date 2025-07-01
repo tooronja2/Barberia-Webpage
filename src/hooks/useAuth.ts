@@ -1,6 +1,6 @@
-// 🔐 Hook personalizado para manejo de autenticación
+// 🔐 Hook personalizado para manejo de autenticación con Supabase
 import { useState, useEffect, useCallback } from 'react';
-import AuthService from '@/services/authService';
+import AuthServiceSupabase from '@/services/authServiceSupabase';
 
 interface AuthState {
   isAuthenticated: boolean;
@@ -22,18 +22,18 @@ export const useAuth = () => {
 
   // Verificar autenticación al cargar
   useEffect(() => {
-    const checkAuth = () => {
+    const checkAuth = async () => {
       try {
-        const isAuth = AuthService.isAuthenticated();
-        const currentUser = AuthService.getCurrentUser();
+        const isAuth = await AuthServiceSupabase.isAuthenticated();
+        const currentUser = await AuthServiceSupabase.getCurrentUser();
         
         setAuthState({
           isAuthenticated: isAuth,
           user: currentUser ? {
-            nombre: currentUser.usuario,
+            nombre: currentUser.nombre,
             rol: currentUser.rol,
-            permisos: currentUser.permisos,
-            barberoAsignado: currentUser.barberoAsignado
+            permisos: currentUser.permisos || [],
+            barberoAsignado: currentUser.barbero_asignado
           } : null,
           isLoading: false
         });
@@ -48,6 +48,26 @@ export const useAuth = () => {
     };
 
     checkAuth();
+
+    // Suscribirse a cambios de autenticación
+    const { data: { subscription } } = AuthServiceSupabase.onAuthStateChange(
+      async (event, session) => {
+        console.log('🔄 Auth state changed:', event);
+        if (event === 'SIGNED_OUT') {
+          setAuthState({
+            isAuthenticated: false,
+            user: null,
+            isLoading: false
+          });
+        } else if (event === 'SIGNED_IN' && session) {
+          await checkAuth();
+        }
+      }
+    );
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
   // Login
@@ -55,16 +75,17 @@ export const useAuth = () => {
     try {
       setAuthState(prev => ({ ...prev, isLoading: true }));
       
-      const result = await AuthService.login(usuario, password);
+      const result = await AuthServiceSupabase.login(usuario, password);
       
-      if (result.success && result.usuario) {
+      if (result.success && result.data) {
+        const userData = result.data.usuario;
         setAuthState({
           isAuthenticated: true,
           user: {
-            nombre: result.usuario.nombre,
-            rol: result.usuario.rol,
-            permisos: result.usuario.permisos,
-            barberoAsignado: result.usuario.barberoAsignado
+            nombre: userData.nombre,
+            rol: userData.rol,
+            permisos: userData.permisos || [],
+            barberoAsignado: userData.barbero_asignado
           },
           isLoading: false
         });
@@ -80,8 +101,8 @@ export const useAuth = () => {
   }, []);
 
   // Logout
-  const logout = useCallback(() => {
-    AuthService.logout();
+  const logout = useCallback(async () => {
+    await AuthServiceSupabase.logout();
     setAuthState({
       isAuthenticated: false,
       user: null,
@@ -90,15 +111,14 @@ export const useAuth = () => {
   }, []);
 
   // Verificar permisos
-  const hasPermission = useCallback((permission: string): boolean => {
-    return AuthService.hasPermission(permission);
+  const hasPermission = useCallback(async (permission: string): Promise<boolean> => {
+    return AuthServiceSupabase.hasPermission(permission);
   }, []);
 
   // Verificar si es admin
-  const isAdmin = useCallback((): boolean => {
-    return authState.user?.rol === 'Administrador' || 
-           authState.user?.permisos.includes('admin') || false;
-  }, [authState.user]);
+  const isAdmin = useCallback(async (): Promise<boolean> => {
+    return AuthServiceSupabase.isAdmin();
+  }, []);
 
   return {
     ...authState,

@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Lock, User, Shield } from 'lucide-react';
-import AuthService from '@/services/authService';
+import AuthServiceSupabase from '@/services/authServiceSupabase';
 import DebugAuth from '@/components/DebugAuth';
 
 interface LoginBarberiaProps {
@@ -23,13 +23,16 @@ const LoginBarberia: React.FC<LoginBarberiaProps> = ({ onLogin }) => {
 
   // Verificar si ya está autenticado
   useEffect(() => {
-    if (AuthService.isAuthenticated()) {
-      const user = AuthService.getCurrentUser();
-      if (user) {
-        console.log('✅ Usuario ya autenticado');
-        onLogin(user.usuario, user.rol, user.permisos);
+    const checkAuth = async () => {
+      if (await AuthServiceSupabase.isAuthenticated()) {
+        const user = await AuthServiceSupabase.getCurrentUser();
+        if (user) {
+          console.log('✅ Usuario ya autenticado');
+          onLogin(user.nombre, user.rol, user.permisos || []);
+        }
       }
-    }
+    };
+    checkAuth();
   }, [onLogin]);
 
   // 🚫 ELIMINADO: limpiarDatosUsuario - Ya no se necesita
@@ -46,15 +49,15 @@ const LoginBarberia: React.FC<LoginBarberiaProps> = ({ onLogin }) => {
     console.log('🔒 Iniciando login SEGURO...');
     
     try {
-      // 🔐 Usar AuthService - MUCHO MÁS SEGURO
-      const resultado = await AuthService.login(usuario, password);
+      // 🚀 Usar Supabase - MÁXIMO NIVEL DE SEGURIDAD
+      const resultado = await AuthServiceSupabase.login(usuario, password);
       
-      if (resultado.success && resultado.usuario) {
-        console.log('✅ Login SEGURO exitoso');
-        // AuthService ya maneja el localStorage de forma segura
-        onLogin(resultado.usuario.nombre, resultado.usuario.rol, resultado.usuario.permisos);
+      if (resultado.success && resultado.data) {
+        const userData = resultado.data.usuario;
+        console.log('✅ Login SUPABASE exitoso');
+        onLogin(userData.nombre, userData.rol, userData.permisos || []);
       } else {
-        console.log('❌ Login SEGURO fallido:', resultado.error);
+        console.log('❌ Login SUPABASE fallido:', resultado.error);
         setError(resultado.error || 'Credenciales incorrectas');
         
         // Actualizar intentos restantes
@@ -66,7 +69,7 @@ const LoginBarberia: React.FC<LoginBarberiaProps> = ({ onLogin }) => {
         }
       }
     } catch (error) {
-      console.error('❌ Error en login SEGURO:', error);
+      console.error('❌ Error en login SUPABASE:', error);
       setError('Error de conexión. Verifica tu internet.');
     }
     
@@ -81,8 +84,8 @@ const LoginBarberia: React.FC<LoginBarberiaProps> = ({ onLogin }) => {
             <Shield className="h-6 w-6 text-green-600" />
             <CardTitle className="text-2xl font-bold">Barbería Estilo</CardTitle>
           </div>
-          <p className="text-gray-600">Sistema SEGURO v4.0</p>
-          <p className="text-xs text-green-600">🔒 Autenticación mejorada</p>
+          <p className="text-gray-600">Sistema SUPABASE v5.0</p>
+          <p className="text-xs text-green-600">🚀 PostgreSQL + JWT Real</p>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleLogin} className="space-y-4">
@@ -132,12 +135,13 @@ const LoginBarberia: React.FC<LoginBarberiaProps> = ({ onLogin }) => {
 
             <Button type="submit" className="w-full" disabled={cargando || intentosRestantes === 0}>
               <Shield className="mr-2 h-4 w-4" />
-              {cargando ? 'Validando Seguro...' : 'Iniciar Sesión SEGURO'}
+              {cargando ? 'Conectando con Supabase...' : 'Iniciar Sesión SUPABASE'}
             </Button>
             
             <div className="text-center text-xs text-green-600 mt-2">
-              <p>🔒 Conexión cifrada y segura</p>
-              <p>🛡️ Sin exposición de credenciales</p>
+              <p>🚀 Base de datos PostgreSQL</p>
+              <p>🔐 JWT Tokens + RLS Security</p>
+              <p>⚡ Real-time Updates</p>
             </div>
           </form>
         </CardContent>
