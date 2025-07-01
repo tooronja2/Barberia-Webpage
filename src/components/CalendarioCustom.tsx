@@ -143,12 +143,8 @@ const CalendarioCustom: React.FC<CalendarioCustomProps> = ({
   const [datosCliente, setDatosCliente] = useState({
     nombre: '',
     email: '',
-    telefono: '',
-    codigoPais: '+54',
-    comentarios: '',
-    recordatorioEmail: true
+    telefono: ''
   });
-  const [mostrarPoliticasCompletas, setMostrarPoliticasCompletas] = useState(false);
   const [cargando, setCargando] = useState(false);
   const [eventos, setEventos] = useState<EventoReserva[]>([]);
 
@@ -329,22 +325,8 @@ const CalendarioCustom: React.FC<CalendarioCustomProps> = ({
   }, [cargarEventos]);
 
   const crearReserva = async () => {
-    if (!fechaSeleccionada || !horaSeleccionada || !datosCliente.nombre.trim() || !datosCliente.email.trim() || !datosCliente.telefono.trim()) {
-      alert('Por favor completa todos los campos obligatorios (nombre completo, teléfono y email)');
-      return;
-    }
-
-    // Validar formato de email
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(datosCliente.email)) {
-      alert('Por favor ingresa un email válido');
-      return;
-    }
-
-    // Validar formato de teléfono (solo números y espacios)
-    const telefonoRegex = /^[0-9\s]+$/;
-    if (!telefonoRegex.test(datosCliente.telefono)) {
-      alert('Por favor ingresa un número de teléfono válido (solo números y espacios)');
+    if (!fechaSeleccionada || !horaSeleccionada || !datosCliente.nombre || !datosCliente.email) {
+      alert('Por favor completa todos los campos obligatorios (nombre y email)');
       return;
     }
 
@@ -364,7 +346,7 @@ const CalendarioCustom: React.FC<CalendarioCustomProps> = ({
       Fecha: fechaSeleccionada.toISOString().split('T')[0],
       Hora_Inicio: horaSeleccionada,
       Hora_Fin: horaFin,
-      Descripcion: `${servicio?.nombre} - Tel: ${datosCliente.codigoPais}${datosCliente.telefono || 'No proporcionado'} - Comentarios: ${datosCliente.comentarios || 'Ninguno'} - Recordatorio: ${datosCliente.recordatorioEmail ? 'Sí' : 'No'}`,
+      Descripcion: `${servicio?.nombre} - Tel: ${datosCliente.telefono || 'No proporcionado'}`,
       Estado: 'Confirmado',
       "Valor del turno": servicio?.precio_oferta || servicio?.precio || 0,
       "Servicios incluidos": servicio?.nombre || '',
@@ -438,114 +420,31 @@ const CalendarioCustom: React.FC<CalendarioCustomProps> = ({
         <div className="space-y-4">
           <h3 className="text-lg font-semibold">Datos del cliente</h3>
           
-          {/* Nombre completo */}
-          <div>
-            <input
-              type="text"
-              placeholder="Ingresa tu nombre completo"
-              value={datosCliente.nombre}
-              onChange={(e) => setDatosCliente({...datosCliente, nombre: e.target.value})}
-              className="w-full p-3 border border-gray-300 rounded-md text-black placeholder:text-gray-500 focus:ring-2 focus:ring-primary focus:border-transparent"
-              required
-            />
-          </div>
+          <input
+            type="text"
+            placeholder="Nombre completo *"
+            value={datosCliente.nombre}
+            onChange={(e) => setDatosCliente({...datosCliente, nombre: e.target.value})}
+            className="w-full p-2 border rounded-md text-black placeholder:text-gray-500"
+            required
+          />
           
-          {/* Teléfono con código de país */}
-          <div>
-            <div className="flex gap-2">
-              <select
-                value={datosCliente.codigoPais}
-                onChange={(e) => setDatosCliente({...datosCliente, codigoPais: e.target.value})}
-                className="p-3 border border-gray-300 rounded-md text-black bg-white focus:ring-2 focus:ring-primary focus:border-transparent"
-              >
-                <option value="+54">🇦🇷 +54</option>
-                <option value="+1">🇺🇸 +1</option>
-                <option value="+34">🇪🇸 +34</option>
-                <option value="+52">🇲🇽 +52</option>
-                <option value="+58">🇻🇪 +58</option>
-                <option value="+56">🇨🇱 +56</option>
-                <option value="+57">🇨🇴 +57</option>
-                <option value="+51">🇵🇪 +51</option>
-                <option value="+55">🇧🇷 +55</option>
-                <option value="+598">🇺🇾 +598</option>
-              </select>
-              <input
-                type="tel"
-                placeholder="11 7366 9765"
-                value={datosCliente.telefono}
-                onChange={(e) => setDatosCliente({...datosCliente, telefono: e.target.value})}
-                className="flex-1 p-3 border border-gray-300 rounded-md text-black placeholder:text-gray-500 focus:ring-2 focus:ring-primary focus:border-transparent"
-                pattern="[0-9 ]+"
-                required
-              />
-            </div>
-          </div>
+          <input
+            type="email"
+            placeholder="Email *"
+            value={datosCliente.email}
+            onChange={(e) => setDatosCliente({...datosCliente, email: e.target.value})}
+            className="w-full p-2 border rounded-md text-black placeholder:text-gray-500"
+            required
+          />
           
-          {/* Email */}
-          <div>
-            <input
-              type="email"
-              placeholder="tu.email@gmail.com"
-              value={datosCliente.email}
-              onChange={(e) => setDatosCliente({...datosCliente, email: e.target.value})}
-              className="w-full p-3 border border-gray-300 rounded-md text-black placeholder:text-gray-500 focus:ring-2 focus:ring-primary focus:border-transparent"
-              required
-            />
-          </div>
-          
-          {/* Comentarios */}
-          <div>
-            <textarea
-              placeholder="Comentarios adicionales sobre tu reserva..."
-              value={datosCliente.comentarios}
-              onChange={(e) => setDatosCliente({...datosCliente, comentarios: e.target.value})}
-              className="w-full p-3 border border-gray-300 rounded-md text-black placeholder:text-gray-500 focus:ring-2 focus:ring-primary focus:border-transparent resize-y min-h-[80px]"
-              rows={3}
-            />
-          </div>
-          
-          {/* Checkbox de recordatorio */}
-          <div className="flex items-center space-x-2">
-            <input
-              type="checkbox"
-              id="recordatorio"
-              checked={datosCliente.recordatorioEmail}
-              onChange={(e) => setDatosCliente({...datosCliente, recordatorioEmail: e.target.checked})}
-              className="w-4 h-4 text-primary bg-gray-100 border-gray-300 rounded focus:ring-primary focus:ring-2"
-            />
-            <label htmlFor="recordatorio" className="text-sm text-gray-700">
-              Reciba un recordatorio por correo electrónico para esta reserva
-            </label>
-          </div>
-
-          {/* Políticas de reserva */}
-          <div className="bg-yellow-50 border border-yellow-200 p-4 rounded-md space-y-3">
-            <h4 className="font-semibold text-yellow-800">Política de Reservas</h4>
-            <div className="text-sm text-yellow-700">
-              <p className="font-medium mb-2">PEDIMOS PUNTUALIDAD EN LOS TURNOS YA QUE SON SOLO 15 MINUTOS. GRACIAS!!!</p>
-              <p className="mb-2">PARA CANCELACIÓN HAY UN BOTÓN EN EL MAIL DE CONFIRMACIÓN</p>
-              
-              <button
-                type="button"
-                onClick={() => setMostrarPoliticasCompletas(!mostrarPoliticasCompletas)}
-                className="text-primary underline hover:text-primary/80 transition-colors"
-              >
-                {mostrarPoliticasCompletas ? 'Ocultar' : 'Más'} información
-              </button>
-              
-              {mostrarPoliticasCompletas && (
-                <div className="mt-3 pt-3 border-t border-yellow-300 space-y-2">
-                  <h5 className="font-medium">Política de Cancelación:</h5>
-                  <p>Puedes cancelar o reprogramar en cualquier momento antes de la hora de la cita.</p>
-                  
-                  <h5 className="font-medium mt-3">Información del Servicio:</h5>
-                  <p><strong>Servicio:</strong> {servicio?.nombre}</p>
-                  <p><strong>Duración:</strong> {duracionMinutos} minutos</p>
-                  <p><strong>Descripción:</strong> {servicio?.descripcion || 'Servicio profesional de barbería'}</p>
-                </div>
-              )}
-            </div>
-          </div>
+          <input
+            type="tel"
+            placeholder="Teléfono (opcional)"
+            value={datosCliente.telefono}
+            onChange={(e) => setDatosCliente({...datosCliente, telefono: e.target.value})}
+            className="w-full p-2 border rounded-md text-black placeholder:text-gray-500"
+          />
 
           <div className="bg-yellow-50 border border-yellow-200 p-4 rounded-md">
             <h4 className="font-semibold text-yellow-800">Resumen de la reserva:</h4>
@@ -559,7 +458,7 @@ const CalendarioCustom: React.FC<CalendarioCustomProps> = ({
 
           <Button 
             onClick={crearReserva} 
-            disabled={cargando || !datosCliente.nombre.trim() || !datosCliente.email.trim() || !datosCliente.telefono.trim()}
+            disabled={cargando || !datosCliente.nombre || !datosCliente.email}
             className="w-full bg-primary text-background font-bold py-3 hover:bg-primary/90 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
           >
             {cargando ? 'Procesando...' : 'Confirmar Reserva'}
