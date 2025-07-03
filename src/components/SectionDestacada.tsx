@@ -46,7 +46,7 @@ const SectionDestacada: React.FC<SectionDestacadaProps> = ({ seccion }) => {
         revealed ? "animate-fade-in opacity-100" : "opacity-0 translate-y-10"
       }`}
     >
-      <h2 className="text-3xl font-heading font-bold mb-8 tracking-tight text-foreground animate-fade-in" style={{ transitionDelay: "120ms" }}>
+      <h2 className="text-3xl font-bold mb-8 tracking-tight text-zinc-900 animate-fade-in" style={{ transitionDelay: "120ms" }}>
         {seccion.titulo}
       </h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
@@ -54,7 +54,7 @@ const SectionDestacada: React.FC<SectionDestacadaProps> = ({ seccion }) => {
           <Link
             to={`/servicios/${item.slug_url}`}
             key={item.id}
-            className={`group bg-card rounded-2xl shadow-xl hover:shadow-2xl hover:scale-105 transition-transform duration-300 animate-slide-in-right ${
+            className={`group bg-white rounded-2xl shadow-xl hover:shadow-2xl hover:scale-105 transition-transform duration-300 animate-slide-in-right ${
               revealed ? "opacity-100" : "opacity-0 translate-x-8"
             }`}
             style={{ animationDelay: `${180 + i * 100}ms` }}
@@ -62,29 +62,29 @@ const SectionDestacada: React.FC<SectionDestacadaProps> = ({ seccion }) => {
             <img
               src={item.imagenes[0]?.url}
               alt={item.imagenes[0]?.alt}
-              className="rounded-t-2xl mb-0 w-full object-cover h-48 border-b border-border transition-transform duration-300 group-hover:scale-105"
+              className="rounded-t-2xl mb-0 w-full object-cover h-48 border-b border-zinc-200 transition-transform duration-300 group-hover:scale-105"
               loading="lazy"
             />
             <div className="flex flex-col gap-2 p-5">
-              <h3 className="text-xl font-semibold text-light-DEFAULT flex items-center gap-2">
+              <h3 className="text-xl font-semibold text-zinc-800 flex items-center gap-2">
                 {item.nombre}
                 {item.en_oferta && (
-                  <span className="ml-1 px-2 py-0.5 text-gold-DEFAULT bg-dark-200 rounded-full font-semibold">
+                  <span className="ml-1 px-2 py-0.5 text-xs text-green-700 bg-green-100 rounded-full font-semibold">
                     Oferta!
                   </span>
                 )}
               </h3>
-              <div className="text-light-100 text-base mb-2 min-h-[40px]">{item.descripcion_breve}</div>
+              <div className="text-zinc-600 text-base mb-2 min-h-[40px]">{item.descripcion_breve}</div>
               <div className="mt-2 flex gap-2 items-center text-lg">
-                <span className="font-bold text-gold-DEFAULT">
+                <span className="font-bold" style={{ color: config?.colores_tema.primario }}>
                   {config?.moneda_simbolo}
                   {item.precio_oferta ?? item.precio}
                 </span>
                 {item.precio_oferta && (
-                  <span className="line-through text-sm text-light-100">{config?.moneda_simbolo}{item.precio}</span>
+                  <span className="line-through text-sm text-zinc-400">{config?.moneda_simbolo}{item.precio}</span>
                 )}
               </div>
-              <button className="mt-4 px-4 py-2 rounded-full bg-gold-DEFAULT text-dark-DEFAULT font-medium text-sm shadow hover:bg-gold-DEFAULT/90 transition focus:ring-2 focus:ring-gold-DEFAULT animate-pulseButton">
+              <button className="mt-4 px-4 py-2 rounded-full bg-zinc-900 text-white font-medium text-sm shadow hover:bg-zinc-700 transition focus:ring-2 focus:ring-primary animate-pulseButton">
                 Reservar
               </button>
             </div>

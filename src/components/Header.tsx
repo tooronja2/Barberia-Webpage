@@ -2,9 +2,8 @@
 import { useBusiness } from "@/context/BusinessContext";
 import { Link, useLocation } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
-// import { useScrollAnimation } from "@/hooks/useScrollAnimation"; // Removed to prevent import errors
 import { Menu } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -24,16 +23,6 @@ const Header = () => {
   const { config } = useBusiness();
   const isMobile = useIsMobile();
   const location = useLocation();
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
   if (!config) return null;
 
@@ -41,57 +30,29 @@ const Header = () => {
   if (isMobile) {
     return (
       <>
-        <header className={`w-full sticky top-0 z-50 border-b-0 transition-all duration-500 transform-gpu ${
-          isScrolled 
-            ? 'bg-card/95 backdrop-blur-xl shadow-2xl border-b border-border/50' 
-            : 'bg-background/90 backdrop-blur-sm'
-        }`}>
-          <nav className="flex justify-between items-center max-w-5xl mx-auto py-4 px-4">
-            <div className={`flex items-center gap-2 font-heading font-bold text-lg transition-all duration-300 ${
-              isScrolled ? 'text-primary' : 'text-foreground'
-            } hover:scale-105 cursor-pointer`}>
-              <span className="text-xl">✂️</span>
+        <header className="w-full bg-black sticky top-0 z-50 border-b-0">
+          <nav className="flex justify-between items-center max-w-5xl mx-auto py-3 px-4">
+            <div className="flex items-center gap-2 font-bold text-lg text-white">
               {config.nombre_negocio}
             </div>
-            <DropdownMenu onOpenChange={setIsMenuOpen}>
+            <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className={`relative p-3 rounded-full transition-all duration-300 hover:scale-110 touch-target ${
-                  isScrolled ? 'bg-primary/10 text-primary' : 'bg-muted/20 text-foreground'
-                } ${isMenuOpen ? 'rotate-180 scale-110' : ''}`}>
-                  <Menu size={20} className="transition-transform duration-300" />
-                  {isMenuOpen && (
-                    <div className="absolute inset-0 bg-primary/20 rounded-full animate-ping" />
-                  )}
+                <button className="p-2 text-white">
+                  <Menu size={20} />
                 </button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent 
-                align="end" 
-                className="w-56 z-50 bg-card/95 backdrop-blur-xl border border-border/50 shadow-2xl rounded-2xl p-2 animate-slideUpFadeIn"
-              >
+              <DropdownMenuContent align="end" className="w-48 z-50 bg-white">
                 {orderedMenu.map((item, i) => (
-                  <DropdownMenuItem 
-                    key={i} 
-                    asChild 
-                    className="transition-all duration-300 hover:bg-primary/10 rounded-xl mb-1 last:mb-0"
-                  >
+                  <DropdownMenuItem key={i} asChild>
                     <Link
                       to={item.url}
-                      className={`w-full cursor-pointer flex items-center gap-3 p-3 transition-all duration-300 touch-target rounded-xl ${
-                        location.pathname === item.url 
-                          ? 'text-primary font-semibold bg-primary/10 shadow-lg' 
-                          : 'text-foreground hover:text-primary'
-                      }`}
+                      className="w-full cursor-pointer"
+                      style={{ color: "black" }}
                     >
-                      <span className="text-lg">
-                        {item.url === '/' ? '🏠' : 
-                         item.url === '/servicios' ? '✂️' :
-                         item.url === '/reservar-turno' ? '📅' :
-                         item.url === '/contacto' ? '📞' : '📄'}
-                      </span>
-                      {item.texto === "Reserva tu Turno" ? "Reservar" : item.texto}
-                      {location.pathname === item.url && (
-                        <span className="ml-auto text-primary">●</span>
-                      )}
+                      {/* En el menú mobile "Reservar" es más corto */}
+                      {item.texto === "Reserva tu Turno"
+                        ? "Reservar"
+                        : item.texto}
                     </Link>
                   </DropdownMenuItem>
                 ))}
@@ -99,12 +60,8 @@ const Header = () => {
             </DropdownMenu>
           </nav>
         </header>
-        {/* Separador animado */}
-        <div className={`w-full h-1 transition-all duration-500 ${
-          isScrolled 
-            ? 'bg-gradient-to-r from-primary via-accent to-primary' 
-            : 'bg-gradient-to-r from-border via-primary/20 to-border'
-        }`} />
+        {/* Separador fino debajo del header */}
+        <div className="w-full h-[7px] bg-zinc-300" />
       </>
     );
   }
@@ -112,60 +69,32 @@ const Header = () => {
   // --- Header para desktop ---
   return (
     <>
-      <header className={`w-full sticky top-0 z-50 border-b-0 transition-all duration-500 transform-gpu ${
-        isScrolled 
-          ? 'bg-card/95 backdrop-blur-xl shadow-2xl border-b border-border/20' 
-          : 'bg-background/90 backdrop-blur-sm'
-      }`}>
-        <nav className="flex justify-between max-w-7xl mx-auto py-4 px-6">
-          <div className={`flex items-center gap-3 font-heading font-bold text-2xl transition-all duration-300 cursor-pointer group ${
-            isScrolled ? 'text-primary' : 'text-foreground'
-          } hover:scale-105`}>
-            <span className="text-2xl group-hover:rotate-12 transition-transform duration-300">✂️</span>
-            <span className="group-hover:text-primary transition-colors duration-300">
-              {config.nombre_negocio}
-            </span>
+      <header className="w-full bg-black sticky top-0 z-50 border-b-0">
+        <nav className="flex justify-between max-w-7xl mx-auto py-3 px-6">
+          <div className="flex items-center gap-2 font-bold text-2xl text-white">
+            {config.nombre_negocio}
           </div>
-          <ul className="flex items-center gap-8">
+          <ul className="flex items-center gap-12">
             {orderedMenu.map((item, i) => (
-              <li key={i} className="relative group">
+              <li key={i}>
                 <Link
                   to={item.url}
-                  className={`relative font-medium text-lg transition-all duration-300 py-3 px-5 rounded-full hover:scale-105 flex items-center gap-2 ${
+                  className={`text-white hover:text-emerald-400 font-medium text-lg transition-colors duration-200 pb-1 border-b-2 border-transparent hover:border-emerald-400 ${
                     location.pathname === item.url
-                      ? "text-background bg-primary shadow-xl border border-primary/50"
-                      : "text-foreground hover:text-primary hover:bg-primary/10"
+                      ? "border-emerald-400"
+                      : ""
                   }`}
                   tabIndex={0}
                 >
-                  <span className="text-base">
-                    {item.url === '/' ? '🏠' : 
-                     item.url === '/servicios' ? '✂️' :
-                     item.url === '/reservar-turno' ? '📅' :
-                     item.url === '/contacto' ? '📞' : '📄'}
-                  </span>
-                  <span>{item.texto}</span>
-                  
-                  {/* Efecto hover para elementos no activos */}
-                  {location.pathname !== item.url && (
-                    <span className="absolute inset-0 bg-gradient-to-r from-primary/20 to-accent/20 rounded-full transform transition-all duration-300 scale-95 opacity-0 group-hover:scale-100 group-hover:opacity-100" />
-                  )}
+                  {item.texto}
                 </Link>
               </li>
             ))}
           </ul>
         </nav>
       </header>
-      {/* Separador animado mejorado */}
-      <div className={`w-full h-1 transition-all duration-500 relative overflow-hidden ${
-        isScrolled 
-          ? 'bg-gradient-to-r from-primary via-accent to-primary' 
-          : 'bg-gradient-to-r from-border via-primary/30 to-border'
-      }`}>
-        {isScrolled && (
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer" />
-        )}
-      </div>
+      {/* Separador fino debajo del header */}
+      <div className="w-full h-[7px] bg-zinc-300" />
     </>
   );
 };

@@ -24,8 +24,8 @@ const Servicios = () => {
   };
 
   return (
-    <main className="max-w-2xl mx-auto pt-10 px-4 mb-12 bg-background text-foreground">
-      <h1 className="text-2xl font-heading font-bold mb-6">Servicios</h1>
+    <main className="max-w-2xl mx-auto pt-10 px-4 mb-12">
+      <h1 className="text-2xl font-bold mb-6">Servicios</h1>
       <div className="flex flex-col gap-3">
         {contenido.map((item, idx) => {
           // Lógica de imagen igual a ReservaTurno
@@ -39,16 +39,16 @@ const Servicios = () => {
           return (
             <button
               key={item.id}
-              className="flex items-center gap-4 rounded-xl border border-dark-200 px-4 py-3 bg-dark-100 hover:bg-dark-200 shadow cursor-pointer transition"
+              className="flex items-center gap-4 rounded-xl border border-gray-200 px-4 py-3 bg-white hover:bg-gray-50 shadow cursor-pointer transition"
               onClick={() => handleSeleccionarServicio(item.id)}
               style={{ textAlign: "left" }}
             >
               <img src={imgSrc} alt={item.nombre} className="h-14 w-14 rounded object-cover" />
               <div className="flex-1">
-                <div className="font-semibold text-light-DEFAULT">{item.nombre}</div>
-                <div className="text-xs text-light-100">{item.detalles?.duracion || "15min"}</div>
+                <div className="font-semibold">{item.nombre}</div>
+                <div className="text-xs text-gray-500">{item.detalles?.duracion || "15min"}</div>
               </div>
-              <div className="font-bold text-gold-DEFAULT">
+              <div className="font-bold text-zinc-700">
                 {config.moneda_simbolo}
                 {item.precio_oferta ?? item.precio}
               </div>

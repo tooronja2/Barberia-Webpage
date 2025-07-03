@@ -1,76 +1,129 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Lock, User, Shield } from 'lucide-react';
-import AuthServiceSimple from '@/services/authServiceSimple';
-import DebugAuth from '@/components/DebugAuth';
+import { Lock, User } from 'lucide-react';
 
 interface LoginBarberiaProps {
   onLogin: (usuario: string, rol: string, permisos: string[]) => void;
 }
 
-// 🔒 Login SEGURO - Usando AuthService
-// NO más credenciales hardcodeadas
+// URLs de Google Apps Script - SINCRONIZADA con GestionUsuarios
+const GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxdfUG33mMa-WIQJtlVkUiNkmM9RwXSKZYqZNShWO7dtjSCmgNpjRgA844eZkM4pVKH/exec';
+const API_SECRET_KEY = 'barberia_estilo_2025_secure_api_xyz789';
 
 const LoginBarberia: React.FC<LoginBarberiaProps> = ({ onLogin }) => {
   const [usuario, setUsuario] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [cargando, setCargando] = useState(false);
-  const [precargando, setPrecargando] = useState(false);
-  const [intentosRestantes, setIntentosRestantes] = useState(3);
 
-  // Verificar si ya está autenticado
-  useEffect(() => {
-    const checkAuth = async () => {
-      if (await AuthServiceSimple.isAuthenticated()) {
-        const user = await AuthServiceSimple.getCurrentUser();
-        if (user) {
-          console.log('✅ Usuario ya autenticado');
-          onLogin(user.nombre, user.rol, user.permisos || []);
-        }
+  const limpiarDatosUsuario = (user: any) => {
+    // Función para limpiar espacios extra en las propiedades (igual que en GestionUsuarios)
+    const limpiarPropiedad = (valor: any) => {
+      if (typeof valor === 'string') {
+        return valor.trim();
       }
+      return valor;
     };
-    checkAuth();
-  }, [onLogin]);
 
-  // 🚫 ELIMINADO: limpiarDatosUsuario - Ya no se necesita
-  // AuthService maneja toda la lógica de forma segura
+    // Procesar permisos - puede venir como string JSON o array
+    let permisos = [];
+    try {
+      const permisosRaw = user.permisos || user['permisos '] || '[]';
+      permisos = typeof permisosRaw === 'string' ? JSON.parse(permisosRaw) : permisosRaw;
+      if (!Array.isArray(permisos)) {
+        permisos = ['ver_turnos'];
+      }
+    } catch (error) {
+      console.error('Error al parsear permisos:', error);
+      permisos = ['ver_turnos'];
+    }
 
-  // 🚫 ELIMINADO: validarUsuarioEnGoogleSheets - ERA INSEGURO
-  // AuthService.login() maneja todo de forma segura
+    return {
+      id: String(user.id || ''),
+      usuario: limpiarPropiedad(user.usuario || user['usuario '] || ''),
+      password: limpiarPropiedad(user.password || user['password '] || ''),
+      nombre: limpiarPropiedad(user.nombre || user['nombre '] || ''),
+      rol: limpiarPropiedad(user.rol || user['rol '] || 'Empleado'),
+      permisos: permisos,
+      barberoAsignado: limpiarPropiedad(user.barberoAsignado || user['barberoAsignado '] || '')
+    };
+  };
+
+  const validarUsuarioEnGoogleSheets = async (usuario: string, password: string) => {
+    try {
+      console.log('🔄 Validando usuario en Google Sheets...');
+      console.log('🔑 Usuario:', usuario, 'Password:', password ? '***' : 'VACIO');
+      
+      // Primero obtenemos todos los usuarios
+      const response = await fetch(
+        `${GOOGLE_APPS_SCRIPT_URL}?action=getUsuarios&apiKey=${API_SECRET_KEY}&timestamp=${Date.now()}`
+      );
+      
+      const data = await response.json();
+      console.log('📄 Respuesta getUsuarios para login:', data);
+
+      if (data.success && data.usuarios) {
+        // Procesar y limpiar datos de usuarios
+        const usuariosProcesados = data.usuarios.map(limpiarDatosUsuario);
+        console.log('✅ Usuarios procesados para validación:', usuariosProcesados);
+        
+        // Buscar el usuario que coincida
+        const usuarioEncontrado = usuariosProcesados.find(u => 
+          u.usuario.toLowerCase() === usuario.toLowerCase() && u.password === password
+        );
+        
+        console.log('🔍 Usuario encontrado:', usuarioEncontrado ? 'SI' : 'NO');
+        
+        if (usuarioEncontrado) {
+          return {
+            valido: true,
+            usuario: usuarioEncontrado
+          };
+        } else {
+          return {
+            valido: false,
+            error: 'Usuario o contraseña incorrectos'
+          };
+        }
+      } else {
+        return {
+          valido: false,
+          error: data.error || 'Error al obtener usuarios'
+        };
+      }
+    } catch (error) {
+      console.error('❌ Error al validar usuario:', error);
+      return {
+        valido: false,
+        error: 'Error de conexión al validar usuario'
+      };
+    }
+  };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setCargando(true);
     setError('');
 
-    console.log('🔒 Iniciando login SEGURO...');
+    console.log('🔐 Intentando login con:', { usuario: usuario, password: '***' });
     
-    try {
-      // 🚀 Usar Supabase - MÁXIMO NIVEL DE SEGURIDAD
-      const resultado = await AuthServiceSimple.login(usuario, password);
+    // Validar solo en Google Sheets
+    const validacionGoogleSheets = await validarUsuarioEnGoogleSheets(usuario, password);
+    
+    if (validacionGoogleSheets.valido && validacionGoogleSheets.usuario) {
+      const usuarioValidado = validacionGoogleSheets.usuario;
+      console.log('✅ Login exitoso desde Google Sheets:', usuarioValidado.nombre);
       
-      if (resultado.success && resultado.data) {
-        const userData = resultado.data.usuario;
-        console.log('✅ Login SUPABASE exitoso');
-        onLogin(userData.nombre, userData.rol, userData.permisos || []);
-      } else {
-        console.log('❌ Login SUPABASE fallido:', resultado.error);
-        setError(resultado.error || 'Credenciales incorrectas');
-        
-        // Actualizar intentos restantes
-        const remainingAttempts = Math.max(0, intentosRestantes - 1);
-        setIntentosRestantes(remainingAttempts);
-        
-        if (remainingAttempts === 0) {
-          setError('Cuenta bloqueada por seguridad. Intenta en 15 minutos.');
-        }
-      }
-    } catch (error) {
-      console.error('❌ Error en login SUPABASE:', error);
-      setError('Error de conexión. Verifica tu internet.');
+      localStorage.setItem('barberia_usuario', usuarioValidado.nombre);
+      localStorage.setItem('barberia_rol', usuarioValidado.rol);
+      localStorage.setItem('barberia_permisos', JSON.stringify(usuarioValidado.permisos));
+      localStorage.setItem('barberia_barbero_asignado', usuarioValidado.barberoAsignado || '');
+      onLogin(usuarioValidado.nombre, usuarioValidado.rol, usuarioValidado.permisos);
+    } else {
+      console.log('❌ Login fallido:', validacionGoogleSheets.error);
+      setError(validacionGoogleSheets.error || 'Usuario o contraseña incorrectos');
     }
     
     setCargando(false);
@@ -80,12 +133,8 @@ const LoginBarberia: React.FC<LoginBarberiaProps> = ({ onLogin }) => {
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <div className="flex items-center justify-center gap-2 mb-2">
-            <Shield className="h-6 w-6 text-green-600" />
-            <CardTitle className="text-2xl font-bold">Barbería Estilo</CardTitle>
-          </div>
-          <p className="text-gray-600">Sistema SUPABASE v5.0</p>
-          <p className="text-xs text-green-600">🚀 PostgreSQL + JWT Real</p>
+          <CardTitle className="text-2xl font-bold">Barbería Estilo</CardTitle>
+          <p className="text-gray-600">Sistema de Gestión PWA v3.0</p>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleLogin} className="space-y-4">
@@ -120,33 +169,17 @@ const LoginBarberia: React.FC<LoginBarberiaProps> = ({ onLogin }) => {
             </div>
 
             {error && (
-              <div className="text-red-600 text-sm text-center bg-red-50 p-3 rounded border border-red-200">
-                <div className="flex items-center justify-center gap-2">
-                  <Shield className="h-4 w-4" />
-                  <span>{error}</span>
-                </div>
-                {intentosRestantes > 0 && (
-                  <p className="text-xs mt-1 text-gray-500">
-                    Intentos restantes: {intentosRestantes}
-                  </p>
-                )}
+              <div className="text-red-600 text-sm text-center bg-red-50 p-2 rounded border border-red-200">
+                {error}
               </div>
             )}
 
-            <Button type="submit" className="w-full" disabled={cargando || intentosRestantes === 0}>
-              <Shield className="mr-2 h-4 w-4" />
-              {cargando ? 'Conectando con Supabase...' : 'Iniciar Sesión SUPABASE'}
+            <Button type="submit" className="w-full" disabled={cargando}>
+              {cargando ? 'Validando...' : 'Iniciar Sesión'}
             </Button>
-            
-            <div className="text-center text-xs text-green-600 mt-2">
-              <p>🚀 Base de datos PostgreSQL</p>
-              <p>🔐 JWT Tokens + RLS Security</p>
-              <p>⚡ Real-time Updates</p>
-            </div>
           </form>
         </CardContent>
       </Card>
-      <DebugAuth />
     </div>
   );
 };

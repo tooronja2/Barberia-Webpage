@@ -27,7 +27,7 @@ interface ServicioStats {
 }
 
 // URL ACTUALIZADA de Google Apps Script
-const GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxgGvtb0kV_SN1zOBGx9ImRk4PXrYB8Fi0HyUHp67J6ef_q5GBpiY1OHm4sqOHc_uZf/exec';
+const GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxdfUG33mMa-WIQJtlVkUiNkmM9RwXSKZYqZNShWO7dtjSCmgNpjRgA844eZkM4pVKH/exec';
 const API_SECRET_KEY = 'barberia_estilo_2025_secure_api_xyz789';
 
 const EstadisticasBarberia: React.FC = () => {
